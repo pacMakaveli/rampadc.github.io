@@ -1,0 +1,46 @@
+#container {
+    width: 730px;
+}
+
+input {
+    vertical-align: middle;
+}
+
+input[type="text"] {
+    width: 3em;
+    text-align: center;
+}
+
+img {
+    vertical-align: middle;
+}
+
+td {
+    text-align: center;
+    border: solid 1px;
+}
+
+table {
+    border: double;
+    width: 100%;
+}
+
+.push-text-left {
+    text-align: left;
+}
+
+.push-text-right {
+    text-align: right;
+    width: auto;
+}
+
+.push-cell-right {
+    text-align: left;
+    width: 90px;
+    padding-right: 5px;
+    border: double;
+}
+
+.units-loss {
+    color: darkred;
+}
