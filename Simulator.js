@@ -376,7 +376,7 @@ Simulator = {
         palaItems = palaItems || []; //Todo: paladin items?
 
         var attBonus = (officer ? 1.1 : 1);
-        attBonus = 1;
+        //attBonus = 1;
 
         var attacker = {
             quantity: {},
