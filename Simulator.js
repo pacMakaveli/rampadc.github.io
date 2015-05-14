@@ -282,6 +282,7 @@ Simulator = {
         if(attUnits.doppelsoldner > 0) {
             if(sum.attack < defStrength.defense) {
                 this._unitsStats['doppelsoldner'].attack = 600;
+                console.log('Berserker outnumbered');
             } else {
                 this._unitsStats['doppelsoldner'].attack = 300;
             }
@@ -375,6 +376,7 @@ Simulator = {
         palaItems = palaItems || []; //Todo: paladin items?
 
         var attBonus = (officer ? 1.1 : 1);
+        attBonus = 1;
 
         var attacker = {
             quantity: {},
