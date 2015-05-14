@@ -99,7 +99,7 @@ function onInputChange(event) {
     };
 
     //console.log(s);
-    var result = Simulator.simulate(s.attackUnits, s.defendUnits, s.wall, s.night, s.morale, s.luck, s.beliefAttacker, s.beliefDefender, [], officer);
+    var result = Simulator.simulate(s.attackUnits, s.defendUnits, s.wall, s.night, s.morale, s.luck, s.beliefDefender, s.beliefAttacker, [], officer);
 
     setSimulationResults(result);
     console.log('Simulation result');
