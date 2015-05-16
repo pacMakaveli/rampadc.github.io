@@ -416,6 +416,9 @@ Simulator = {
                 var ratio = attackFood[attackType] / attackFoodSum;
                 var defense = defendStrength[attackType.replace('attack', 'defense')] * ratio * wallBonus * nightbonus + wallDefense * ratio;
                 var a = attackStrength[attackType] * moral * luck * faithBonus * attBonus / defense;
+
+                console.log('Defense:'+defense);
+                console.log('Attack:'+a);
                 if (a < 1) {
                     var c = Math.sqrt(a) * a;
                     for (var unit in defenderUnits) {
