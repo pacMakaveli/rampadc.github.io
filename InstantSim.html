@@ -37,7 +37,7 @@
             parseTroops(getURLParameter('def')),
             parseInt(getURLParameter('wall')),
             false,
-            parseInt(getURLParameter('moral')),
+            parseInt(getURLParameter('moral'))-10, //sim seems to be outputing results 10% strength better than expected
             parseInt(getURLParameter('luck')),
             (parseInt(getURLParameter('attChurch')) == 1 ? true : false),
             (parseInt(getURLParameter('defChurch')) == 1 ? true : false),
@@ -77,6 +77,11 @@
     var defPNode = document.createTextNode(defenderLossStr);
     defP.appendChild(defPNode);
     document.body.appendChild(defP);
+
+    var wallAfterP = document.createElement('p');
+    var wallPNode = document.createTextNode(String(result.wallAfter));
+    wallAfterP.appendChild(wallPNode);
+    document.body.appendChild(wallAfterP);
 </script>
 </body>
 </html>
