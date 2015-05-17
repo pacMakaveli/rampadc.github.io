@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="Simulator.js"></script>
+    <title>Instant Sim</title>
+</head>
+<body>
+<script>
+    function getURLParameter(name) {
+        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null
+    }
+
+    function parseTroops(str) {
+        //sp,sw,axe,ar,lc,ma,hc,ram,cat,serk,treb,snob,knight
+        var a = str.split(',');
+        var troopObj = {
+            spear : a[0],
+            sword : a[1],
+            axe : a[2],
+            archer : a[3],
+            light_cavalry : a[4],
+            mounted_archer : a[5],
+            heavy_cavalry : a[6],
+            ram : a[7],
+            catapult : a[8],
+            doppelsoldner : a[9],
+            trebuchet : a[10],
+            snob : a[11],
+            knight : a[12]
+        };
+        return troopObj;
+    }
+
+    var result = Simulator.simulate(
+            parseTroops(getURLParameter('att')),
+            parseTroops(getURLParameter('def')),
+            parseInt(getURLParameter('wall')),
+            false,
+            parseInt(getURLParameter('moral')),
+            parseInt(getURLParameter('luck')),
+            (parseInt(getURLParameter('attChurch')) == 1 ? true : false),
+            (parseInt(getURLParameter('defChurch')) == 1 ? true : false),
+            [],
+            (parseInt(getURLParameter('officer')) == 1 ? true : false)
+    );
+
+    console.log('Simulation result');
+    console.table(result.attacker);
+    console.table(result.defender);
+
+    if (result.wallBefore !== result.wallAfter) {
+        console.log('Wall reduced from ' + result.wallBefore + ' to ' + result.wallAfter + '.');
+    } else {
+        console.log('Ram does no damage to wall.');
+    }
+
+    var unitsStr = ["spear", "sword", "axe", "archer", "light_cavalry", "mounted_archer", "heavy_cavalry", "ram", "catapult", "doppelsoldner", "trebuchet", "snob", "knight"];
+
+    var i;
+    var attackerLossStr = "";
+    var defenderLossStr = "";
+    for(i = 0; i < unitsStr.length; i++) {
+        attackerLossStr += String(result.attacker.losses[unitsStr[i]]);
+        attackerLossStr += '\t';
+
+        defenderLossStr += String(result.defender.losses[unitsStr[i]]);
+        defenderLossStr += '\t';
+    }
+
+    var attP = document.createElement('p');
+    var attPNode = document.createTextNode(attackerLossStr);
+    attP.appendChild(attPNode);
+    document.body.appendChild(attP);
+
+    var defP = document.createElement('p');
+    var defPNode = document.createTextNode(defenderLossStr);
+    defP.appendChild(defPNode);
+    document.body.appendChild(defP);
+</script>
+</body>
+</html>
