@@ -2,6 +2,7 @@ var inputs;
 var unitsStr = ["spear", "sword", "axe", "archer", "light_cavalry", "mounted_archer", "heavy_cavalry", "ram", "catapult", "doppelsoldner", "trebuchet", "snob", "knight"];
 window.onload = function() {
     initEvents();
+    simQueryData();
 };
 
 function initEvents() {
@@ -12,6 +13,10 @@ function initEvents() {
 
     var resetBtn = document.getElementById('resetBtn');
     resetBtn.addEventListener('click', onClear);
+
+    if(getURLParameter('att')) {
+
+    }
 }
 
 function onClear(event) {
@@ -34,6 +39,10 @@ function onClear(event) {
 function onInputChange(event) {
     console.clear();
 
+    getResult();
+}
+
+function getResult() {
     var units = document.getElementsByClassName('unit-input');
     units = [].slice.call(units);
 
@@ -46,7 +55,6 @@ function onInputChange(event) {
 
     //FILL IN UNITS
     var baseNumber = 0;
-
     var au = {}; //attack units
     au.spear = units[baseNumber+ 0];
     au.sword = units[baseNumber + 1];
@@ -136,4 +144,44 @@ function setSimulationResults(result) {
     } else {
         wallLeft.innerHTML = 'Ram does no damage to wall.';
     }
+}
+
+function getURLParameter(name) {
+    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null
+}
+
+function simQueryData() {
+    if(
+        (getURLParameter('att') != null) &&
+        (getURLParameter('def') != null)
+    )
+    {
+        //console.log('There\'s some work to do here');
+        var attackerStr = getURLParameter('att');
+        var defenderStr = getURLParameter('def');
+
+        var units = document.getElementsByClassName('unit-input');
+        var unitsArr = attackerStr.split(',').concat(defenderStr.split(','));
+
+        for(var i = 0; i < unitsArr.length; i++) {
+            units[i].value = unitsArr[i];
+        }
+
+        var defChurch = getURLParameter('defChurch');
+        var attChurch = getURLParameter('attChurch');
+        var wall = getURLParameter('wall');
+        var moral = getURLParameter('moral');
+        var officer = getURLParameter('officer');
+        var luck = getURLParameter('luck');
+
+        if(defChurch != null) document.getElementById('defenderFaithCB').checked = (defChurch == '1' ? true : false);
+        if(attChurch != null) document.getElementById('attackerFaithCB').checked = (attChurch == '1' ? true : false);
+        if(luck != null) document.getElementById('luck').value = luck;
+        if(moral != null) document.getElementById('morale').value = moral;
+        if(luck != null) document.getElementById('luck').value = luck;
+        if(wall != null) document.getElementById('wallLvl').value = wall;
+        if(officer != null) document.getElementById('officerCB').checked = (officer == '1' ? true : false);
+    }
+
+    getResult();
 }
