@@ -173,6 +173,7 @@ function simQueryData() {
         var moral = getURLParameter('moral');
         var officer = getURLParameter('officer');
         var luck = getURLParameter('luck');
+        var title = getURLParameter('title');
 
         if(defChurch != null) document.getElementById('defenderFaithCB').checked = (defChurch == '1' ? true : false);
         if(attChurch != null) document.getElementById('attackerFaithCB').checked = (attChurch == '1' ? true : false);
@@ -181,6 +182,7 @@ function simQueryData() {
         if(luck != null) document.getElementById('luck').value = luck;
         if(wall != null) document.getElementById('wallLvl').value = wall;
         if(officer != null) document.getElementById('officerCB').checked = (officer == '1' ? true : false);
+        if(title !+ null) document.title = title;
     }
 
     getResult();
