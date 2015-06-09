@@ -182,7 +182,7 @@ function simQueryData() {
         if(luck != null) document.getElementById('luck').value = luck;
         if(wall != null) document.getElementById('wallLvl').value = wall;
         if(officer != null) document.getElementById('officerCB').checked = (officer == '1' ? true : false);
-        if(title !+ null) document.title = title;
+        if(title !+ null) document.title = String(title);
     }
 
     getResult();
