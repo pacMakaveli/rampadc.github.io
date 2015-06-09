@@ -173,7 +173,6 @@ function simQueryData() {
         var moral = getURLParameter('moral');
         var officer = getURLParameter('officer');
         var luck = getURLParameter('luck');
-        var title = getURLParameter('title');
 
         if(defChurch != null) document.getElementById('defenderFaithCB').checked = (defChurch == '1' ? true : false);
         if(attChurch != null) document.getElementById('attackerFaithCB').checked = (attChurch == '1' ? true : false);
