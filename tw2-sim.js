@@ -1,21 +1,45 @@
 var inputs;
+var simResult;
+
 var unitsStr = ["spear", "sword", "axe", "archer", "light_cavalry", "mounted_archer", "heavy_cavalry", "ram", "catapult", "doppelsoldner", "trebuchet", "snob", "knight"];
 window.onload = function() {
+    simResult = null;
+
     initEvents();
     simQueryData();
 };
 
 function initEvents() {
     inputs = document.getElementsByTagName('input');
-    for(var i = 0; i < inputs.length; i++) {
+    var i;
+    for(i = 0; i < inputs.length; i++) {
         inputs[i].addEventListener('change', onInputChange);
     }
 
     var resetBtn = document.getElementById('resetBtn');
     resetBtn.addEventListener('click', onClear);
 
-    if(getURLParameter('att')) {
+    var useDefSurvivedBtn = document.getElementById('useDefSurvivedBtn');
+    useDefSurvivedBtn.addEventListener('click', onDefSurvBtn);
+}
 
+function onDefSurvBtn(event) {
+    if(simResult != null) {
+        //console.log(simResult);
+	    var unitsInputs = document.getElementsByClassName('unit-input');
+
+        for(var i = 13; i < 26; i++) {
+            //console.log(unitsStr[i-13]);
+            //console.log(simResult.defender.quantity[unitsStr[i-13]]);
+            //console.log(simResult.defender.losses[unitsStr[i-13]]);
+            //console.log(simResult.defender.quantity[unitsStr[i-13]] - simResult.defender.losses[unitsStr[i-13]]);
+
+	        unitsInputs[i].value = String(simResult.defender.quantity[unitsStr[i-13]] - simResult.defender.losses[unitsStr[i-13]]);
+        }
+
+        getResult();
+    } else {
+        console.log(simResult);
     }
 }
 
@@ -110,19 +134,21 @@ function getResult() {
     var result = Simulator.simulate(s.attackUnits, s.defendUnits, s.wall, s.night, s.morale, s.luck, s.beliefDefender, s.beliefAttacker, [], officer);
 
     setSimulationResults(result);
-    console.log('Simulation result');
-    console.table(result.attacker);
-    console.table(result.defender);
+    //console.log('Simulation result');
+    //console.table(result.attacker);
+    //console.table(result.defender);
 
     if (result.wallBefore !== result.wallAfter) {
-        console.log('Wall reduced from ' + result.wallBefore + ' to ' + result.wallAfter + '.');
+        //console.log('Wall reduced from ' + result.wallBefore + ' to ' + result.wallAfter + '.');
     } else {
-        console.log('Ram does no damage to wall.');
+    //    console.log('Ram does no damage to wall.');
     }
 }
 
 function setSimulationResults(result) {
-    console.log(result);
+    //console.log(result);
+    simResult = result; //for checks later
+
     var lossesTD = document.getElementsByClassName('units-loss');
 
     var i;
