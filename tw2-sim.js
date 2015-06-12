@@ -27,6 +27,7 @@ function onDefSurvBtn(event) {
     if(simResult != null) {
         //console.log(simResult);
 	    var unitsInputs = document.getElementsByClassName('unit-input');
+        document.getElementById('wallLvl').value = String(simResult.wallAfter);
 
         for(var i = 13; i < 26; i++) {
             //console.log(unitsStr[i-13]);
@@ -61,7 +62,7 @@ function onClear(event) {
 }
 
 function onInputChange(event) {
-    console.clear();
+    //console.clear();
 
     getResult();
 }
