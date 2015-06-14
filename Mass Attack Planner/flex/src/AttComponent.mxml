@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 width="535" height="42"
+		 creationComplete="init(event)">
+	<s:layout>
+		<s:HorizontalLayout gap="5" paddingBottom="5" paddingLeft="5" paddingRight="5"
+							paddingTop="5" verticalAlign="middle"/>
+	</s:layout>
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			import spark.events.IndexChangeEvent;
+			import spark.events.TextOperationEvent;
+			
+			static public const SPEAR:String = "spear";
+			static public const SWORD:String = "sword";
+			static public const ARCHER:String = "archer";
+			static public const AXE:String = "axe";
+			static public const LC:String = "light cavalry";
+			static public const MA:String = "mounted archer";
+			static public const HC:String = "heavy cavalry";
+			static public const RAM:String = "ram";
+			static public const CAT:String = "catapult";
+			static public const SERK:String = "berserker";
+			static public const TREB:String = "trebuchet";
+			static public const SNOB:String = "nobleman";
+			static public const KNIGHT:String = "paladin";
+			
+			[Bindable]
+			private var _villageCoor:Point;
+			
+			private var _fakeUnit:String;
+			private var _attUnit:String;
+			private var _targets:Vector.<Point>;
+			private var _target:Point;
+			private var _first:Boolean;
+			
+			[Bindable]
+			private var _unitsList:Array;
+			
+			[Bindable]
+			private var targetsList:ArrayCollection;
+			
+			public function get first():Boolean
+			{
+				return _first;
+			}
+
+			public function set first(value:Boolean):void
+			{
+				_first = value;
+			}
+
+			public function get target():Point
+			{
+				return _target;
+			}
+
+			public function set target(value:Point):void
+			{
+				_target = value;
+			}
+
+			public function get targets():Vector.<Point>
+			{
+				return _targets;
+			}
+
+			public function set targets(value:Vector.<Point>):void
+			{
+				_targets = value;
+				
+				var tA:Array = new Array();
+				for(var i:uint = 0; i < _targets.length; i++) {
+					tA.push(String(_targets[i].x) + '|' + String(_targets[i].y));
+				}
+				targetsList = new ArrayCollection(tA);
+			}
+
+			public function get attUnit():String
+			{
+				return _attUnit;
+			}
+
+			public function set attUnit(value:String):void
+			{
+				_attUnit = value;
+			}
+
+			public function get fakeUnit():String
+			{
+				return _fakeUnit;
+			}
+
+			public function set fakeUnit(value:String):void
+			{
+				_fakeUnit = value;
+			}
+
+			public function get villageCoor():Point
+			{
+				return _villageCoor;
+			}
+
+			public function set villageCoor(value:Point):void
+			{
+				_villageCoor = value;
+			}
+
+			protected function init(event:FlexEvent):void
+			{
+				_unitsList = new Array(SPEAR, SWORD, AXE, ARCHER, LC, MA, HC, RAM, CAT, SERK, TREB, SNOB, KNIGHT);
+			}
+			
+			protected function attUnitType_changeHandler(event:IndexChangeEvent):void
+			{
+				if(attUnitType.selectedItem != SNOB) {
+					prioritzeAttackCB.enabled = true;
+				} else {
+					prioritzeAttackCB.enabled = false;
+					prioritzeAttackCB.selected = false;
+				}
+			}
+			
+			protected function targetVillages_changeHandler(event:IndexChangeEvent):void
+			{
+				_target = new Point(Number(String(targetVillages.selectedItem).substr(0, 3)), Number(String(targetVillages.selectedItem).substr(4,3)));
+			}
+			
+			protected function prioritizeAttCB_clickHandler(event:MouseEvent):void
+			{
+				_first = prioritzeAttackCB.selected;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<!--<s:Label width="176" text="1234567890123456789012345"/>
+	<s:Label width="50" text="500|500" textAlign="center" verticalAlign="middle"/>
+	<s:Label width="50" text="9999999" textAlign="center" verticalAlign="middle"/>-->
+	
+	<s:Label width="50" text="{_villageCoor.x}|{_villageCoor.y}" textAlign="center" verticalAlign="middle"/>
+	
+	<s:HGroup gap="0" verticalAlign="bottom">
+		<s:DropDownList id="targetVillages" width="143" prompt="select a target..." dataProvider="{targetsList}" change="targetVillages_changeHandler(event)"></s:DropDownList>		
+	</s:HGroup>
+	
+	<s:HGroup gap="0" verticalAlign="middle">
+		<s:DropDownList id="fakeUnitType" width="128" prompt="fake unit type" toolTip="Fake attack unit">
+			<s:dataProvider>
+				<s:ArrayList source="{_unitsList}"></s:ArrayList>
+			</s:dataProvider>
+		</s:DropDownList>
+		<s:DropDownList id="attUnitType" width="128" prompt="attack unit type" requireSelection="true" change="attUnitType_changeHandler(event)" toolTip="Attack unit type">
+			<s:dataProvider>
+				<s:ArrayList source="{_unitsList}"></s:ArrayList>
+			</s:dataProvider>
+		</s:DropDownList>
+	</s:HGroup>
+	<s:CheckBox id="prioritzeAttackCB" height="19" label="First" click="prioritizeAttCB_clickHandler(event)"
+				enabled="true"/>
+</s:BorderContainer>

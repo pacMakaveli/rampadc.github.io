@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="800" minHeight="300"
+			   creationComplete="init(event)" xmlns:local="*">
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.globalization.DateTimeFormatter;
+			
+			import mx.events.FlexEvent;
+			import mx.events.ResizeEvent;
+			
+			[SWF(width='800',height='700',backgroundColor='#ffffff',frameRate='25')]
+			
+			private var villageRegex:RegExp = new RegExp(/([0-9]+)\|([0-9]+)/g);
+			
+			private var attV:Vector.<Point>;
+			private var targetV:Vector.<Point>;
+			private var attComponents:Vector.<AttComponent>;
+			
+			private var plan:String;
+			private var planVec:Vector.<Attack>;
+			private var dtf:DateTimeFormatter;
+			
+			protected function init(event:FlexEvent):void
+			{
+				attV = new Vector.<Point>();
+				targetV = new Vector.<Point>();
+				attComponents = new Vector.<AttComponent>();
+				
+				planVec = new Vector.<Attack>();
+				
+				dtf = new DateTimeFormatter("en-US");
+				dtf.setDateTimePattern("dd-MM-yyyy 'at' HH:mm:ss");
+			}
+			
+			protected function parseInputsBtn_clickHandler(event:MouseEvent):void
+			{
+				attV.length = 0;
+				targetV.length = 0;
+				attComponents.length = 0;
+				
+				var attR:Object = villageRegex.exec(attVilsTxt.text);
+				while(attR != null) {
+					if(!attPointExisted(Number(attR[1]), Number(attR[2]))) {
+						attV.push(new Point(Number(attR[1]), Number(attR[2])));
+						attR = villageRegex.exec(attVilsTxt.text);
+					}
+				}
+				
+				var tarR:Object = villageRegex.exec(targetsTxt.text);
+				while(tarR != null) {
+					if(!tarPointExisted(Number(tarR[1]), Number(tarR[2]))) {
+						targetV.push(new Point(Number(tarR[1]), Number(tarR[2])));
+						tarR = villageRegex.exec(targetsTxt.text);
+					}
+				}
+				
+				if((attV.length != 0) && (targetV.length != 0)) {
+					for(var i:uint = 0; i < attV.length; i++) {
+						var ac:AttComponent = new AttComponent();
+						ac.villageCoor = attV[i];
+						ac.targets = targetV;
+						attComponents.push(ac);
+					}
+					placeAttComponents();
+				}
+			}
+			
+			private function placeAttComponents():void
+			{
+//				attCompGroup.removeAllElements();
+				for(var i:Number = 0; i < attV.length; i++) {
+					attCompGroup.addElement(attComponents[i]);
+				}
+			}
+			
+			private function attPointExisted(x:Number, y:Number):Boolean
+			{
+				for(var i:uint = 0; i < attV.length; i++) {
+					if((attV[i].x == x) && (attV[i].y == y)) {
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			private function tarPointExisted(x:Number, y:Number):Boolean {
+				for(var i:uint = 0; i < targetV.length; i++) {
+					if((targetV[i].x == x) && (targetV[i].y == y)) {
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			protected function makePlan(event:Event):void
+			{
+				if(attDate.selectedDate != null) {
+					makePlanBtn.enabled = true;
+				}
+			}
+			
+			protected function makePlanBtn_clickHandler(event:MouseEvent):void
+			{
+				plan = new String();
+				planVec.length = 0;
+				
+				var landingTime:Date = new Date(attDate.selectedDate);
+				landingTime.hours = attHour.value;
+				landingTime.minutes = attMin.value;
+				landingTime.seconds = attSec.value;
+				
+				for(var i:uint = 0; i < attComponents.length; i++) {
+					var target:Point = attComponents[i].target;
+					var origin:Point = attComponents[i].villageCoor;
+					
+					if(attComponents[i].target != null) {
+						var attLandingTime:Date = new Date(landingTime);
+						var attType:String = attComponents[i].attUnitType.selectedItem;
+						var wallNuke:Boolean = attComponents[i].prioritzeAttackCB.selected;
+						var fakeType:String = attComponents[i].fakeUnitType.selectedItem;
+						
+						if(attType != Units.SNOB) {
+							if(wallNuke) {
+								attLandingTime.seconds = landingTime.seconds - 2;
+							} else {
+								attLandingTime.seconds = landingTime.seconds - 1;
+							}
+						}
+						
+						var attTravelTime_inSeconds:Number = calculateDistance(origin, target)*calculateArmySpeed(attType, Number(worldSpeedTxt.text));
+						var attStartTime:Date = new Date(attLandingTime.valueOf()-attTravelTime_inSeconds*1000);
+						
+						var attack:Attack = new Attack(origin, target, attLandingTime, attStartTime, attType);
+						planVec.push(attack);
+						
+						var fakeUnitType:Object = attComponents[i].fakeUnitType.selectedItem;
+						
+						if(fakeUnitType != null) {
+							var fakeLandingTime:Date = new Date(landingTime);
+							var fakeTravelTime_inSeconds:Number = calculateDistance(origin, target)*calculateArmySpeed(String(fakeUnitType), Number(worldSpeedTxt.text));
+							var fakeStartTime:Date = new Date(fakeLandingTime.valueOf()-fakeTravelTime_inSeconds*1000);
+							var fakeAttack:Attack = new Attack(origin, target, landingTime, fakeStartTime, null, String(fakeUnitType));
+							planVec.push(fakeAttack);
+						}
+						
+					}
+				}
+				
+				if(planVec.length > 0) {
+					trace(planVec);
+				}
+			}
+			
+			private function calculateDistance(o:Point, d:Point):Number {
+				var dy:Number = Math.abs(o.y - d.y);
+				var dx:Number = Math.abs(o.x - d.x);
+				
+				if(dy % 2) {
+					dx += o.y % 2 ? 0.5 : -0.5;
+				}
+				
+				return Math.sqrt(dx*dx + dy*dy*0.75);
+			}
+			
+			private function calculateArmySpeed(unit:String, worldSpeed:Number):Number {
+				var baseUnitSpeed:Number;
+				
+				switch (unit) {
+					case Units.SPEAR:
+						baseUnitSpeed = Units.SPEAR_SPEED;
+						break;
+					case Units.SWORD:
+						baseUnitSpeed = Units.SWORD_SPEED;
+						break;
+					case Units.AXE:
+						baseUnitSpeed = Units.AXE_SPEED;
+						break;
+					case Units.ARCHER:
+						baseUnitSpeed = Units.ARCHER_SPEED;
+						break;
+					case Units.LC:
+						baseUnitSpeed = Units.LC_SPEED;
+						break;
+					case Units.MA:
+						baseUnitSpeed = Units.MA_SPEED;
+						break;
+					case Units.HC:
+						baseUnitSpeed = Units.HC_SPEED;
+						break;
+					case Units.RAM:
+						baseUnitSpeed = Units.RAM_SPEED;
+						break;
+					case Units.CAT:
+						baseUnitSpeed = Units.CAT_SPEED;
+						break;
+					case Units.SERK:
+						baseUnitSpeed = Units.SERK_SPEED;
+						break;
+					case Units.TREB:
+						baseUnitSpeed = Units.TREB_SPEED;
+						break;
+					case Units.SNOB:
+						baseUnitSpeed = Units.SNOB_SPEED;
+						break;
+					case Units.KNIGHT:
+						baseUnitSpeed = Units.KNIGHT_SPEED;
+						break;
+				}
+				return int((baseUnitSpeed/worldSpeed*60)*100)/100; //in seconds
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:layout>
+		<s:VerticalLayout paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" horizontalAlign="center"/>
+	</s:layout>
+	<s:HGroup width="100%" height="20%">
+		<s:VGroup height="100%" width="50%">
+			<s:Label fontSize="12" fontWeight="bold" text="Attacking villages"/>
+			<s:TextArea id="attVilsTxt" width="100%" height="100%" prompt="500|500, 501|501"
+						text="424|111, 353|222"/>
+			
+		</s:VGroup>
+		<s:VGroup height="100%" width="50%">
+			<s:Label fontSize="12" fontWeight="bold" text="Target villages"/>
+			<s:TextArea id="targetsTxt" width="100%" height="100%" prompt="400|400, 401|401"
+						text="424|321, 353|250, 424|181, 359|222"/>
+		</s:VGroup>
+	</s:HGroup>
+	<s:VGroup horizontalAlign="center">
+		<s:HGroup verticalAlign="middle">
+			<s:Button id="parseInputsBtn" label="Parse Inputs" click="parseInputsBtn_clickHandler(event)"/>
+			<s:Button id="makePlanBtn" label="Make Plan" click="makePlanBtn_clickHandler(event)"
+					  enabled="false"/>
+		</s:HGroup>
+		<s:Label text="UTC DD/MM/YY (24-hour)"/>
+		<s:HGroup verticalAlign="middle">
+			<mx:DateField id="attDate" change="makePlan(event)" formatString="DD/MM/YY"/>
+			<s:NumericStepper id="attHour" change="makePlan(event)"/>
+			<s:Label text=":"/>
+			<s:NumericStepper id="attMin" change="makePlan(event)"/>
+			<s:Label text=":"/>
+			<s:NumericStepper id="attSec" change="makePlan(event)"/>
+			<s:Label text="World Speed"/>
+			<s:TextInput id="worldSpeedTxt" width="30" prompt="1" text="1" textAlign="center"/>
+			<s:Spacer width="20" height="10"/>
+		</s:HGroup>
+	</s:VGroup>
+	<s:Scroller id="scroller" horizontalScrollPolicy="auto" height="100%" width="100%">
+		<s:TileGroup id="attCompGroup" width="100%" height="100%" horizontalAlign="center"></s:TileGroup>
+	</s:Scroller>
+</s:Application>
