@@ -2,7 +2,7 @@
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
 		 xmlns:s="library://ns.adobe.com/flex/spark"
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 width="535" height="42"
+		 width="575" height="42"
 		 creationComplete="init(event)">
 	<s:layout>
 		<s:HorizontalLayout gap="5" paddingBottom="5" paddingLeft="5" paddingRight="5"
@@ -136,6 +136,13 @@
 				_first = prioritzeAttackCB.selected;
 			}
 			
+			protected function clearBtn_clickHandler(event:MouseEvent):void
+			{
+				targetVillages.selectedIndex = -1;
+				fakeUnitType.selectedIndex = -1;
+				attUnitType.selectedIndex = -1;
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -166,4 +173,5 @@
 	</s:HGroup>
 	<s:CheckBox id="prioritzeAttackCB" height="19" label="First" click="prioritizeAttCB_clickHandler(event)"
 				enabled="true"/>
+	<s:Button id="clearBtn" width="50" label="Clear" click="clearBtn_clickHandler(event)"/>
 </s:BorderContainer>
