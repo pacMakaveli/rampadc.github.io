@@ -204,10 +204,6 @@
 					plan += "Slowest unit: " + (planVec[i].fake ? planVec[i].fakeUnitType : planVec[i].attackUnitType) + '\n\n';
 				}
 				
-//				Clipboard.generalClipboard.clear();
-//				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, plan, false);
-				
-//				statusTxt.text = "Plan copied to clipboard";
 				planTxt.text = plan;
 			}
 			
@@ -330,11 +326,14 @@
 		<s:Label text="UTC DD/MM/YY (24-hour)"/>
 		<s:HGroup textAlign="center" verticalAlign="middle">
 			<mx:DateField id="attDate" change="makePlan(event)" formatString="DD/MM/YY"/>
-			<s:NumericStepper id="attHour" change="makePlan(event)"/>
+			<s:NumericStepper id="attHour" change="makePlan(event)" maximum="23" minimum="0"
+							  stepSize="1"/>
 			<s:Label text=":"/>
-			<s:NumericStepper id="attMin" change="makePlan(event)"/>
+			<s:NumericStepper id="attMin" change="makePlan(event)" maximum="59" minimum="0"
+							  stepSize="1"/>
 			<s:Label text=":"/>
-			<s:NumericStepper id="attSec" change="makePlan(event)"/>
+			<s:NumericStepper id="attSec" change="makePlan(event)" maximum="59" minimum="0"
+							  stepSize="0"/>
 			<s:Label text="World Speed"/>
 			<s:TextInput id="worldSpeedTxt" width="30" prompt="1" text="1" textAlign="center"/>
 			<s:Spacer width="20" height="10"/>
