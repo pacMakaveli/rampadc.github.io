@@ -2,7 +2,7 @@
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
 		 xmlns:s="library://ns.adobe.com/flex/spark"
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 width="575" height="42"
+		 width="800" height="42"
 		 creationComplete="init(event)">
 	<s:layout>
 		<s:HorizontalLayout gap="5" paddingBottom="5" paddingLeft="5" paddingRight="5"
@@ -32,19 +32,42 @@
 			
 			[Bindable]
 			private var _villageCoor:Point;
+			[Bindable]
+			private var _villageName:String;
 			
 			private var _fakeUnit:String;
 			private var _attUnit:String;
 			private var _targets:Vector.<Point>;
 			private var _target:Point;
+			private var _targetName:String;
 			private var _first:Boolean;
 			
 			[Bindable]
 			private var _unitsList:Array;
 			
 			[Bindable]
-			private var targetsList:ArrayCollection;
+			private var _targetsList:ArrayCollection;
 			
+			public function get targetName():String
+			{
+				return _targetName;
+			}
+
+			public function set targetsList(value:Array):void
+			{
+				_targetsList = new ArrayCollection(value);
+			}
+
+			public function get villageName():String
+			{
+				return _villageName;
+			}
+
+			public function set villageName(value:String):void
+			{
+				_villageName = value;
+			}
+
 			public function get first():Boolean
 			{
 				return _first;
@@ -63,22 +86,6 @@
 			public function set target(value:Point):void
 			{
 				_target = value;
-			}
-
-			public function get targets():Vector.<Point>
-			{
-				return _targets;
-			}
-
-			public function set targets(value:Vector.<Point>):void
-			{
-				_targets = value;
-				
-				var tA:Array = new Array();
-				for(var i:uint = 0; i < _targets.length; i++) {
-					tA.push(String(_targets[i].x) + '|' + String(_targets[i].y));
-				}
-				targetsList = new ArrayCollection(tA);
 			}
 
 			public function get attUnit():String
@@ -128,7 +135,16 @@
 			
 			protected function targetVillages_changeHandler(event:IndexChangeEvent):void
 			{
-				_target = new Point(Number(String(targetVillages.selectedItem).substr(0, 3)), Number(String(targetVillages.selectedItem).substr(4,3)));
+				var startIndexCoor:uint = String(targetVillages.selectedItem).length - 8;
+				var targetNameRegex:RegExp = /(.+)\s+\([0-9]+\|[0-9]+\)/;
+				_target = new Point(Number(String(targetVillages.selectedItem).substr(startIndexCoor, 3)), Number(String(targetVillages.selectedItem).substr(startIndexCoor+4,3)));
+				
+				var obj:Object = targetNameRegex.exec(String(targetVillages.selectedItem));
+				if(obj != null) {
+					_targetName = obj[1];
+				} else {
+					_targetName = "";
+				}
 			}
 			
 			protected function prioritizeAttCB_clickHandler(event:MouseEvent):void
@@ -143,20 +159,23 @@
 				attUnitType.selectedIndex = -1;
 			}
 			
+			private function toArray(iterable:*):Array {
+				var ret:Array = [];
+				for each (var elem:String in iterable) ret.push(elem);
+				return ret;
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	
-	<!--<s:Label width="176" text="1234567890123456789012345"/>
-	<s:Label width="50" text="500|500" textAlign="center" verticalAlign="middle"/>
-	<s:Label width="50" text="9999999" textAlign="center" verticalAlign="middle"/>-->
-	
+	<s:Label width="176" text="{_villageName}"/>
 	<s:Label width="50" text="{_villageCoor.x}|{_villageCoor.y}" textAlign="center" verticalAlign="middle"/>
 	
 	<s:HGroup gap="0" verticalAlign="bottom">
-		<s:DropDownList id="targetVillages" width="143" prompt="select a target..." dataProvider="{targetsList}" change="targetVillages_changeHandler(event)"></s:DropDownList>		
+		<s:DropDownList id="targetVillages" width="186" prompt="select a target..." dataProvider="{_targetsList}" change="targetVillages_changeHandler(event)"></s:DropDownList>		
 	</s:HGroup>
 	
 	<s:HGroup gap="0" verticalAlign="middle">

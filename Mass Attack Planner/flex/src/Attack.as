@@ -11,16 +11,40 @@ package
 		private var _fakeUnitType:String;
 		private var _attackUnitType:String;
 		private var _fake:Boolean;
+		private var _originName:String;
+		private var _targetName:String;
 		
-		public function Attack(origin:Point, target:Point, landingDate:Date, launchDate:Date, attackUnitType:String=null, fakeUnitType:String=null)
+		public function Attack(origin:Point, originName:String, target:Point, targetName:String, landingDate:Date, launchDate:Date, attackUnitType:String=null, fakeUnitType:String=null)
 		{
 			_origin = new Point(origin.x, origin.y);
 			_target = new Point(target.x, target.y);
+			_originName = originName;
+			_targetName = targetName;
 			_landingDate = new Date(landingDate);
 			_launchDate = new Date(launchDate);
 			_attackUnitType = attackUnitType;
 			_fakeUnitType = fakeUnitType;
 			_fake = (_fakeUnitType != null ? true : false);
+		}
+
+		public function get targetName():String
+		{
+			return _targetName;
+		}
+
+		public function set targetName(value:String):void
+		{
+			_targetName = value;
+		}
+
+		public function get originName():String
+		{
+			return _originName;
+		}
+
+		public function set originName(value:String):void
+		{
+			_originName = value;
 		}
 
 		public function get fake():Boolean
