@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
-			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="800" minHeight="300"
-			   creationComplete="init(event)" xmlns:local="*"
-			   >
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:local="*" minWidth="800" minHeight="300"
+			   creationComplete="init(event)">
 	
 	<fx:Script>
 		<![CDATA[
@@ -132,6 +132,7 @@
 				statusTxt.text = "";
 				if(attDate.selectedDate != null) {
 					makePlanBtn.enabled = true;
+					massFakerBtn.enabled = true;
 				}
 			}
 			
@@ -184,8 +185,12 @@
 					}
 				}
 				
+				
 				if(planVec.length > 0) {
 					outputPlan();
+				} else {
+					statusTxt.text = "No plans can be generated";
+					Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, "");
 				}
 			}
 			
@@ -204,7 +209,9 @@
 					plan += "Slowest unit: " + (planVec[i].fake ? planVec[i].fakeUnitType : planVec[i].attackUnitType) + '\n\n';
 				}
 				
-				planTxt.text = plan;
+				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, plan);
+				statusTxt.text = "Plan copied to clipboard";
+				//				planTxt.text = plan;
 			}
 			
 			private function sortByLaunchTime(a:Attack, b:Attack):Number
@@ -294,6 +301,32 @@
 				attCompGroup.removeAllElements();
 			}
 			
+			protected function massFakerBtn_clickHandler(event:MouseEvent):void
+			{
+				landingTime = new Date(attDate.selectedDate);
+				landingTime.hours = attHour.value;
+				landingTime.minutes = attMin.value;
+				landingTime.seconds = attSec.value;
+				
+				for(var i:uint = 0; i < attV_coor.length; i++) {
+					for(var j:uint = 0; j < tarV_coor.length; j++) {
+						var fakeLandingTime1:Date = new Date(landingTime);
+						var fakeTravelTime_inSeconds1:Number = calculateDistance(attV_coor[i], tarV_coor[j])*calculateArmySpeed(Units.RAM, Number(worldSpeedTxt.text));
+						var fakeStartTime1:Date = new Date(fakeLandingTime1.valueOf()-fakeTravelTime_inSeconds1*1000);
+						var fakeAttack1:Attack = new Attack(attV_coor[i], attV_name[i], tarV_coor[j], tarV_name[j], landingTime, fakeStartTime1, null, Units.RAM);
+						planVec.push(fakeAttack1);
+					}
+				}
+				
+				outputPlan();
+			}
+			
+			protected function loadPlanBtn_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -319,9 +352,10 @@
 		<s:HGroup verticalAlign="middle">
 			<s:Button id="parseInputsBtn" label="Parse Inputs" click="parseInputsBtn_clickHandler(event)"/>
 			<s:Button id="clearMatchupsBtn" label="Clear Plan Nodes" click="clearMatchupsBtn_clickHandler(event)"/>
+			<s:Button id="massFakerBtn" label="Mass Faker" click="massFakerBtn_clickHandler(event)"
+					  enabled="false"/>
 			<s:Button id="makePlanBtn" label="Make Plan" click="makePlanBtn_clickHandler(event)"
 					  enabled="false"/>
-			<s:TextArea id="planTxt" y="51" width="100%" height="26" editable="true" enabled="true"/>
 		</s:HGroup>
 		<s:Label text="UTC DD/MM/YY (24-hour)"/>
 		<s:HGroup textAlign="center" verticalAlign="middle">

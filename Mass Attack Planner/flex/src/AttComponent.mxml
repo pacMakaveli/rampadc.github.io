@@ -2,7 +2,7 @@
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
 				   xmlns:s="library://ns.adobe.com/flex/spark"
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
-				   width="800" height="42" borderStyle="solid" creationComplete="init(event)"
+				   width="816" height="42" borderStyle="solid" creationComplete="init(event)"
 				   >
 	<s:layout>
 		<s:HorizontalLayout gap="5" paddingBottom="5" paddingLeft="5" paddingRight="5"
@@ -208,5 +208,5 @@
 	</s:HGroup>
 	<s:CheckBox id="prioritzeAttackCB" height="19" label="First" click="prioritizeAttCB_clickHandler(event)"
 				enabled="true"/>
-	<s:Button id="clearBtn" width="50" label="Clear" click="clearBtn_clickHandler(event)"/>
+	<s:Button id="clearBtn" width="60" label="Clear" click="clearBtn_clickHandler(event)"/>
 </s:BorderContainer>
