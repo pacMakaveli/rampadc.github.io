@@ -105,6 +105,7 @@
 				for(var i:Number = 0; i < attV_coor.length; i++) {
 					attCompGroup.addElement(attComponents[i]);
 				}
+				statusTxt.text = "UI components placed";
 			}
 			
 			private function attPointExisted(x:Number, y:Number):Boolean
@@ -195,18 +196,19 @@
 					String(zeroPad(landingTime.hours,2)) + ":"+String(zeroPad(landingTime.minutes,2))+":"+String(zeroPad(landingTime.seconds,2)) + '\n\n';
 				
 				for(var i:Number = 0; i < planVec.length; i++) {
-					plan += "Origin: " + planVec[i].originName + ' (' + String(planVec[i].origin.x) + "|" + String(planVec[i].origin.y) + ")\n";
-					plan += "Target: " + planVec[i].targetName + ' (' + String(planVec[i].target.x) + "|" + String(planVec[i].target.y) + ")\n";
+					plan += "Origin: " + planVec[i].originName + ' (' + String(planVec[i].origin.x) + "|" + String(planVec[i].origin.y) + ")" + '\n';
+					plan += "Target: " + planVec[i].targetName + ' (' + String(planVec[i].target.x) + "|" + String(planVec[i].target.y) + ')' + '\n';
 					plan += "Launch time: " + String(zeroPad(planVec[i].launchDate.date, 2)) + "/" + String(zeroPad(planVec[i].launchDate.month+1,2)) + "/" + String(planVec[i].launchDate.fullYear) + 
 						" at " + String(zeroPad(planVec[i].launchDate.hours,2)) + ":"+String(zeroPad(planVec[i].launchDate.minutes,2))+":"+String(zeroPad(planVec[i].launchDate.seconds,2)) + '\n';
 					plan += "Fake: " + (planVec[i].fake ? "yes" : "no") + '\n';
 					plan += "Slowest unit: " + (planVec[i].fake ? planVec[i].fakeUnitType : planVec[i].attackUnitType) + '\n\n';
 				}
 				
-				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, plan, false);
+//				Clipboard.generalClipboard.clear();
+//				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, plan, false);
 				
-				statusTxt.text = "Plan copied to clipboard";
+//				statusTxt.text = "Plan copied to clipboard";
+				planTxt.text = plan;
 			}
 			
 			private function sortByLaunchTime(a:Attack, b:Attack):Number
@@ -323,6 +325,7 @@
 			<s:Button id="clearMatchupsBtn" label="Clear Plan Nodes" click="clearMatchupsBtn_clickHandler(event)"/>
 			<s:Button id="makePlanBtn" label="Make Plan" click="makePlanBtn_clickHandler(event)"
 					  enabled="false"/>
+			<s:TextArea id="planTxt" y="51" width="100%" height="26" editable="true" enabled="true"/>
 		</s:HGroup>
 		<s:Label text="UTC DD/MM/YY (24-hour)"/>
 		<s:HGroup textAlign="center" verticalAlign="middle">
