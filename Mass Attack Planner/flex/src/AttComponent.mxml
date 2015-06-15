@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
-		 xmlns:s="library://ns.adobe.com/flex/spark"
-		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 width="800" height="42"
-		 creationComplete="init(event)">
+				   xmlns:s="library://ns.adobe.com/flex/spark"
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   width="800" height="42" borderStyle="solid" creationComplete="init(event)"
+				   >
 	<s:layout>
 		<s:HorizontalLayout gap="5" paddingBottom="5" paddingLeft="5" paddingRight="5"
 							paddingTop="5" verticalAlign="middle"/>
@@ -127,7 +127,9 @@
 			{
 				if(attUnitType.selectedItem != SNOB) {
 					prioritzeAttackCB.enabled = true;
+					this.setStyle("borderColor", 0xFF0000);
 				} else {
+					this.setStyle("borderColor", 0x8F01DD);
 					prioritzeAttackCB.enabled = false;
 					prioritzeAttackCB.selected = false;
 				}
@@ -154,6 +156,7 @@
 			
 			protected function clearBtn_clickHandler(event:MouseEvent):void
 			{
+				this.setStyle('borderColor', 0xb7babc);
 				targetVillages.selectedIndex = -1;
 				fakeUnitType.selectedIndex = -1;
 				attUnitType.selectedIndex = -1;
@@ -165,11 +168,24 @@
 				return ret;
 			}
 			
+			protected function fakeUnitType_changeHandler(event:IndexChangeEvent):void
+			{
+				this.setStyle('borderColor', 0x386838);
+				if(attUnitType.selectedIndex != -1) {
+					if(attUnitType.selectedItem != SNOB) {
+						this.setStyle("borderColor", 0xFF0000);
+					} else {
+						this.setStyle("borderColor", 0x8F01DD);
+					}
+				}
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
+	
 	
 	<s:Label width="176" text="{_villageName}"/>
 	<s:Label width="50" text="{_villageCoor.x}|{_villageCoor.y}" textAlign="center" verticalAlign="middle"/>
@@ -179,7 +195,7 @@
 	</s:HGroup>
 	
 	<s:HGroup gap="0" verticalAlign="middle">
-		<s:DropDownList id="fakeUnitType" width="128" prompt="fake unit type" toolTip="Fake attack unit">
+		<s:DropDownList id="fakeUnitType" width="128" prompt="fake unit type" toolTip="Fake attack unit" change="fakeUnitType_changeHandler(event)">
 			<s:dataProvider>
 				<s:ArrayList source="{_unitsList}"></s:ArrayList>
 			</s:dataProvider>
