@@ -184,7 +184,7 @@
 				<s:ArrayList source="{_unitsList}"></s:ArrayList>
 			</s:dataProvider>
 		</s:DropDownList>
-		<s:DropDownList id="attUnitType" width="128" prompt="attack unit type" requireSelection="true" change="attUnitType_changeHandler(event)" toolTip="Attack unit type">
+		<s:DropDownList id="attUnitType" width="128" prompt="attack unit type" change="attUnitType_changeHandler(event)" toolTip="Attack unit type">
 			<s:dataProvider>
 				<s:ArrayList source="{_unitsList}"></s:ArrayList>
 			</s:dataProvider>
