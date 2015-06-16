@@ -197,7 +197,7 @@
 			private function outputPlan():void {
 				planVec = planVec.sort(sortByLaunchTime);
 				
-				plan = "Landing time: " + String(landingTime.date) + "/" + String(zeroPad(landingTime.month+1,2)) + "/" + String(landingTime.fullYear) + " at " + 
+				plan = "Landing time: " + String(zeroPad(landingTime.date,2)) + "/" + String(zeroPad(landingTime.month+1,2)) + "/" + String(landingTime.fullYear) + " at " + 
 					String(zeroPad(landingTime.hours,2)) + ":"+String(zeroPad(landingTime.minutes,2))+":"+String(zeroPad(landingTime.seconds,2)) + '\n\n';
 				
 				for(var i:Number = 0; i < planVec.length; i++) {
@@ -211,7 +211,6 @@
 				
 				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, plan);
 				statusTxt.text = "Plan copied to clipboard";
-				//				planTxt.text = plan;
 			}
 			
 			private function sortByLaunchTime(a:Attack, b:Attack):Number
