@@ -48,6 +48,8 @@
 				dtf = new DateTimeFormatter("en-US");
 				dtf.setDateTimePattern("dd-MM-yyyy 'at' HH:mm:ss");
 				
+				trace(calculateDistance(new Point(664,759), new Point(668, 768)));
+				
 			}
 			
 			protected function parseInputsBtn_clickHandler(event:MouseEvent):void
@@ -168,7 +170,9 @@
 						
 						var attTravelTime_inSeconds:Number = calculateDistance(origin, target)*calculateArmySpeed(attType, Number(worldSpeedTxt.text));
 						var attStartTime:Date = new Date(attLandingTime.valueOf()-attTravelTime_inSeconds*1000);
-						
+						trace(calculateDistance(origin, target));
+						trace(calculateArmySpeed(attType, Number(worldSpeedTxt.text)));
+						trace(attTravelTime_inSeconds);
 						var attack:Attack = new Attack(origin, originName, target, targetName, attLandingTime, attStartTime, attType);
 						planVec.push(attack);
 						
@@ -224,15 +228,15 @@
 				}
 			}
 			
-			private function calculateDistance(o:Point, d:Point):Number {
-				var dy:Number = Math.abs(o.y - d.y);
-				var dx:Number = Math.abs(o.x - d.x);
+			private function calculateDistance(start:Point, end:Point):Number {
+				var dy:Number = start.y - end.y;
+				var dx:Number = start.x - end.x;
 				
 				if(dy % 2) {
-					dx += o.y % 2 ? 0.5 : -0.5;
+					dx += start.y % 2 ? 0.5 : -0.5;
 				}
 				
-				return Math.sqrt(dx*dx + dy*dy*0.75);
+				return Math.sqrt(dx * dx + dy * dy * 0.75);
 			}
 			
 			private function calculateArmySpeed(unit:String, worldSpeed:Number):Number {
