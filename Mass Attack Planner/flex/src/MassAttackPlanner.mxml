@@ -48,7 +48,7 @@
 				dtf = new DateTimeFormatter("en-US");
 				dtf.setDateTimePattern("dd-MM-yyyy 'at' HH:mm:ss");
 				
-				trace(calculateDistance(new Point(664,759), new Point(668, 768)));
+//				trace(calculateDistance(new Point(664,759), new Point(668, 768)));
 				
 			}
 			
@@ -60,6 +60,7 @@
 				tarV_name.length = 0;
 				
 				attComponents.length = 0;
+				attCompGroup.removeAllElements();
 				
 				statusTxt.text = "Parsing attacking villages... ";
 				var attR:Object = villageRegex.exec(attVilsTxt.text);
@@ -170,9 +171,6 @@
 						
 						var attTravelTime_inSeconds:Number = calculateDistance(origin, target)*calculateArmySpeed(attType, Number(worldSpeedTxt.text));
 						var attStartTime:Date = new Date(attLandingTime.valueOf()-attTravelTime_inSeconds*1000);
-						trace(calculateDistance(origin, target));
-						trace(calculateArmySpeed(attType, Number(worldSpeedTxt.text)));
-						trace(attTravelTime_inSeconds);
 						var attack:Attack = new Attack(origin, originName, target, targetName, attLandingTime, attStartTime, attType);
 						planVec.push(attack);
 						
@@ -191,6 +189,7 @@
 				
 				
 				if(planVec.length > 0) {
+					Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, "");
 					outputPlan();
 				} else {
 					statusTxt.text = "No plans can be generated";
@@ -209,10 +208,12 @@
 					plan += "Target: " + planVec[i].targetName + ' (' + String(planVec[i].target.x) + "|" + String(planVec[i].target.y) + ')' + '\n';
 					plan += "Launch time: " + String(zeroPad(planVec[i].launchDate.date, 2)) + "/" + String(zeroPad(planVec[i].launchDate.month+1,2)) + "/" + String(planVec[i].launchDate.fullYear) + 
 						" at " + String(zeroPad(planVec[i].launchDate.hours,2)) + ":"+String(zeroPad(planVec[i].launchDate.minutes,2))+":"+String(zeroPad(planVec[i].launchDate.seconds,2)) + '\n';
+					plan += "Attack land time: " + String(zeroPad(planVec[i].landingDate.date, 2)) + "/" + String(zeroPad(planVec[i].landingDate.month+1,2)) + "/" + String(planVec[i].landingDate.fullYear) + 
+						" at " + String(zeroPad(planVec[i].landingDate.hours,2)) + ":"+String(zeroPad(planVec[i].landingDate.minutes,2))+":"+String(zeroPad(planVec[i].landingDate.seconds,2)) + '\n';
 					plan += "Fake: " + (planVec[i].fake ? "yes" : "no") + '\n';
 					plan += "Slowest unit: " + (planVec[i].fake ? planVec[i].fakeUnitType : planVec[i].attackUnitType) + '\n\n';
 				}
-				
+				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, "");
 				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, plan);
 				statusTxt.text = "Plan copied to clipboard";
 			}
@@ -323,13 +324,6 @@
 				
 				outputPlan();
 			}
-			
-			protected function loadPlanBtn_clickHandler(event:MouseEvent):void
-			{
-				// TODO Auto-generated method stub
-				
-			}
-			
 		]]>
 	</fx:Script>
 	
