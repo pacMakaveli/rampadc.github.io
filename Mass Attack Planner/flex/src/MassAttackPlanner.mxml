@@ -98,7 +98,10 @@
 						ac.targetsList = targetsStr;
 						attComponents.push(ac);
 					}
+					statusTxt.text = "Placing UI Components...";
 					placeAttComponents();
+				} else {
+					statusTxt.text = "Need at least 1 attacking village or 1 defending village";
 				}
 			}
 			
