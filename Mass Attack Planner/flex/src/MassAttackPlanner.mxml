@@ -174,6 +174,7 @@
 						
 						var attTravelTime_inSeconds:Number = calculateDistance(origin, target)*calculateArmySpeed(attType, Number(worldSpeedTxt.text));
 						var attStartTime:Date = new Date(attLandingTime.valueOf()-attTravelTime_inSeconds*1000);
+						attStartTime = convertToUTC(attStartTime);
 						var attack:Attack = new Attack(origin, originName, target, targetName, attLandingTime, attStartTime, attType);
 						planVec.push(attack);
 						
@@ -183,6 +184,7 @@
 							var fakeLandingTime:Date = new Date(landingTime);
 							var fakeTravelTime_inSeconds:Number = calculateDistance(origin, target)*calculateArmySpeed(String(fakeUnitType), Number(worldSpeedTxt.text));
 							var fakeStartTime:Date = new Date(fakeLandingTime.valueOf()-fakeTravelTime_inSeconds*1000);
+							fakeStartTime = convertToUTC(fakeStartTime);
 							var fakeAttack:Attack = new Attack(origin, originName, target, targetName, landingTime, fakeStartTime, null, String(fakeUnitType));
 							planVec.push(fakeAttack);
 						}
@@ -198,6 +200,11 @@
 					statusTxt.text = "No plans can be generated";
 					Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, "");
 				}
+			}
+			
+			private function convertToUTC(dtDate:Date):Date{
+				dtDate.setTime(dtDate.getTime() + (dtDate.getTimezoneOffset() * 60000))
+				return dtDate;
 			}
 			
 			private function outputPlan():void {
@@ -320,6 +327,7 @@
 						var fakeLandingTime1:Date = new Date(landingTime);
 						var fakeTravelTime_inSeconds1:Number = calculateDistance(attV_coor[i], tarV_coor[j])*calculateArmySpeed(Units.RAM, Number(worldSpeedTxt.text));
 						var fakeStartTime1:Date = new Date(fakeLandingTime1.valueOf()-fakeTravelTime_inSeconds1*1000);
+						fakeStartTime1 = convertToUTC(fakeStartTime1);
 						var fakeAttack1:Attack = new Attack(attV_coor[i], attV_name[i], tarV_coor[j], tarV_name[j], landingTime, fakeStartTime1, null, Units.RAM);
 						planVec.push(fakeAttack1);
 					}
