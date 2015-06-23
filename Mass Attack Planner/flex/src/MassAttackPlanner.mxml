@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
-			   xmlns:s="library://ns.adobe.com/flex/spark"
-			   xmlns:mx="library://ns.adobe.com/flex/mx"
-			   xmlns:local="*" minWidth="800" minHeight="300"
-			   creationComplete="init(event)">
+					   xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   xmlns:local="*"
+					   minWidth="1024" minHeight="500"
+					   creationComplete="init(event)">
 	
 	<fx:Script>
 		<![CDATA[
@@ -17,12 +18,14 @@
 			
 			import spark.events.TextOperationEvent;
 			
-			private var villageRegex:RegExp = new RegExp(/\((.+)\)\[([0-9]+)\|([0-9]+)\]/g);
+			private var villageRegex:RegExp = new RegExp(/\((.+)\)\[([0-9]+)\|([0-9]+)\]/gm);
 			
 			private var attV_name:Vector.<String>;
 			private var attV_coor:Vector.<Point>;
+			private var attV_id:Vector.<Number>;
 			private var tarV_name:Vector.<String>;
 			private var tarV_coor:Vector.<Point>;
+			private var tarV_id:Vector.<Number>;
 			private var attComponents:Vector.<AttComponent>;
 			
 			private var plan:String;
@@ -30,8 +33,10 @@
 			private var dtf:DateTimeFormatter;
 			
 			private var landingTime:Date;
-			private var en6_mapDataURL:String;
-			private var en6_mapData:Object;
+			
+			private var saveFR:FileReference;
+			private var file:FileReference;
+			private var loaded:Vector.<Attack>;
 			
 			protected function init(event:FlexEvent):void
 			{
@@ -41,15 +46,12 @@
 				tarV_coor = new Vector.<Point>();
 				tarV_name = new Vector.<String>();
 				
+				attV_id = new Vector.<Number>();
+				tarV_id = new Vector.<Number>();
+				
 				attComponents = new Vector.<AttComponent>();
 				
 				planVec = new Vector.<Attack>();
-				
-				dtf = new DateTimeFormatter("en-US");
-				dtf.setDateTimePattern("dd-MM-yyyy 'at' HH:mm:ss");
-				
-//				trace(calculateDistance(new Point(664,759), new Point(668, 768)));
-				
 			}
 			
 			protected function parseInputsBtn_clickHandler(event:MouseEvent):void
@@ -58,9 +60,13 @@
 				attV_name.length = 0;
 				tarV_coor.length = 0;
 				tarV_name.length = 0;
+				attV_id.length = 0;
+				tarV_id.length = 0;
 				
 				attComponents.length = 0;
 				attCompGroup.removeAllElements();
+				
+				statusTxt2.text = "";
 				
 				statusTxt.text = "Parsing attacking villages... ";
 				var attR:Object = villageRegex.exec(attVilsTxt.text);
@@ -68,6 +74,7 @@
 					if(!attPointExisted(Number(attR[2]), Number(attR[3]))) {
 						attV_name.push(new String(attR[1]));
 						attV_coor.push(new Point(Number(attR[2]), Number(attR[3])));
+						attV_id.push(Number(attR[4]));
 						attR = villageRegex.exec(attVilsTxt.text);
 					}
 				}
@@ -78,24 +85,26 @@
 					if(!tarPointExisted(Number(tarR[2]), Number(tarR[3]))) {
 						tarV_coor.push(new Point(Number(tarR[2]), Number(tarR[3])));
 						tarV_name.push(new String(tarR[1]));
+						tarV_id.push(Number(tarR[4]));
 						tarR = villageRegex.exec(targetsTxt.text);
 					}
 				}
 				
 				statusTxt.text = "Creating UI components... ";
-				//make target strings
+				
 				var targetsStr:Array = new Array();
 				for(var i:uint = 0; i < tarV_coor.length; i++) {
 					var targetStr:String = tarV_name[i] + ' (' + String(zeroPad(tarV_coor[i].x,2)) + '|' + String(zeroPad(tarV_coor[i].y,2)) + ')';
 					targetsStr.push(targetStr);
 				}
-				
 				if((attV_coor.length != 0) && (tarV_coor.length != 0)) {
 					for(i = 0; i < attV_coor.length; i++) {
 						var ac:AttComponent = new AttComponent();
 						ac.villageCoor = attV_coor[i];
 						ac.villageName = attV_name[i];
+						ac.villageId = attV_id[i];
 						ac.targetsList = targetsStr;
+						ac.worldSpeed = Number(worldSpeedTxt.text);
 						attComponents.push(ac);
 					}
 					statusTxt.text = "Placing UI Components...";
@@ -107,7 +116,6 @@
 			
 			private function placeAttComponents():void
 			{
-				statusTxt.text = "Placing UI components... ";
 				for(var i:Number = 0; i < attV_coor.length; i++) {
 					attCompGroup.addElement(attComponents[i]);
 				}
@@ -133,36 +141,46 @@
 				return false;
 			}
 			
-			protected function makePlan(event:Event):void
+			protected function enablePlanMakers(event:Event):void
 			{
 				statusTxt.text = "";
+				statusTxt2.text = "";
 				if(attDate.selectedDate != null) {
 					makePlanBtn.enabled = true;
 					massFakerBtn.enabled = true;
+					condenseBtn.enabled = true;
 				}
 			}
 			
 			protected function makePlanBtn_clickHandler(event:MouseEvent):void
 			{
+				var noble:Boolean = false;
+				
 				plan = new String();
 				planVec.length = 0;
 				
-				landingTime = new Date(attDate.selectedDate);
-				landingTime.hours = attHour.value;
-				landingTime.minutes = attMin.value;
-				landingTime.seconds = attSec.value;
+				landingTime = new Date();
+				
+				landingTime.dateUTC = attDate.selectedDate.date;
+				landingTime.monthUTC = attDate.selectedDate.month;
+				landingTime.fullYearUTC = attDate.selectedDate.fullYear;
+				landingTime.hoursUTC = attHour.value;
+				landingTime.minutesUTC = attMin.value;
+				landingTime.secondsUTC = attSec.value;
 				
 				for(var i:uint = 0; i < attComponents.length; i++) {
 					var target:Point = attComponents[i].target;
 					var targetName:String = attComponents[i].targetName;
+					var targetId:Number = attComponents[i].targetId;
+					
 					var originName:String = attComponents[i].villageName;
 					var origin:Point = attComponents[i].villageCoor;
+					var originId:Number = attComponents[i].villageId;
 					
 					if(attComponents[i].target != null) {
 						var attLandingTime:Date = new Date(landingTime);
 						var attType:String = attComponents[i].attUnitType.selectedItem;
 						var wallNuke:Boolean = attComponents[i].prioritzeAttackCB.selected;
-						var fakeType:String = attComponents[i].fakeUnitType.selectedItem;
 						
 						if(attType != Units.SNOB) {
 							if(wallNuke) {
@@ -170,60 +188,71 @@
 							} else {
 								attLandingTime.seconds = landingTime.seconds - 1;
 							}
+						} else {
+							noble = true;
 						}
 						
-						var attTravelTime_inSeconds:Number = calculateDistance(origin, target)*calculateArmySpeed(attType, Number(worldSpeedTxt.text));
-						var attStartTime:Date = new Date(attLandingTime.valueOf()-attTravelTime_inSeconds*1000);
-						var attack:Attack = new Attack(origin, originName, target, targetName, attLandingTime, attStartTime, attType);
+						var attTravelTime_inSeconds:Number = Attack.calculateDistance(origin, target)*Attack.calculateArmySpeed(attType, Number(worldSpeedTxt.text));
+						var attStartTime:Date = Attack.calculateLaunchTime(attTravelTime_inSeconds, attLandingTime);
+						var attack:Attack = new Attack(origin, originName, originId, target, targetName, targetId, attLandingTime, attStartTime, attType);
 						planVec.push(attack);
-						
-						var fakeUnitType:Object = attComponents[i].fakeUnitType.selectedItem;
-						
-						if(fakeUnitType != null) {
-							var fakeLandingTime:Date = new Date(landingTime);
-							var fakeTravelTime_inSeconds:Number = calculateDistance(origin, target)*calculateArmySpeed(String(fakeUnitType), Number(worldSpeedTxt.text));
-							var fakeStartTime:Date = new Date(fakeLandingTime.valueOf()-fakeTravelTime_inSeconds*1000);
-							var fakeAttack:Attack = new Attack(origin, originName, target, targetName, landingTime, fakeStartTime, null, String(fakeUnitType));
-							planVec.push(fakeAttack);
-						}
-						
 					}
 				}
 				
-				
 				if(planVec.length > 0) {
 					Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, "");
-					outputPlan();
+					outputPlan(false);
 				} else {
 					statusTxt.text = "No plans can be generated";
+					statusTxt2.text = "";
 					Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, "");
 				}
 			}
 			
-			private function convertToUTC(dtDate:Date):Date{
-				dtDate.setTime(dtDate.getTime() + (dtDate.getTimezoneOffset() * 60000))
-				return dtDate;
+			private function formatDateToUTC(d:Date):String {
+				var str:String = String(zeroPad(d.dateUTC,2)) + '/' + String(zeroPad(d.monthUTC+1,2)) +'/' + String(d.fullYearUTC) + ' at ' + String(zeroPad(d.hoursUTC,2)) + ':'+String(zeroPad(d.minutesUTC,2)) + ':'+String(zeroPad(d.secondsUTC,2));
+				return str;
 			}
 			
-			private function outputPlan():void {
+			private function formateDateToLocal(d:Date):String {
+				var str:String = String(zeroPad(d.date,2)) + '/' + String(zeroPad(d.month+1,2)) +'/' + String(d.fullYear) + ' at ' + String(zeroPad(d.hours,2)) + ':'+String(zeroPad(d.minutes,2)) + ':'+String(zeroPad(d.seconds,2));
+				return str;
+			}
+			
+			private function outputPlan(fake:Boolean):void {
 				planVec = planVec.sort(sortByLaunchTime);
+				plan = "//Earliest launch time (UTC): "+ formatDateToUTC(planVec[0].launchDate) +"\n";
+				plan += "//Landing time (UTC): "+formatDateToUTC(landingTime)+"\n\n";
 				
-				plan = "Landing time: " + String(zeroPad(landingTime.date,2)) + "/" + String(zeroPad(landingTime.month+1,2)) + "/" + String(landingTime.fullYear) + " at " + 
-					String(zeroPad(landingTime.hours,2)) + ":"+String(zeroPad(landingTime.minutes,2))+":"+String(zeroPad(landingTime.seconds,2)) + '\n\n';
+				var type:String = "";
 				
 				for(var i:Number = 0; i < planVec.length; i++) {
-					plan += "Origin: " + planVec[i].originName + ' (' + String(planVec[i].origin.x) + "|" + String(planVec[i].origin.y) + ")" + '\n';
-					plan += "Target: " + planVec[i].targetName + ' (' + String(planVec[i].target.x) + "|" + String(planVec[i].target.y) + ')' + '\n';
-					plan += "Launch time: " + String(zeroPad(planVec[i].launchDate.date, 2)) + "/" + String(zeroPad(planVec[i].launchDate.month+1,2)) + "/" + String(planVec[i].launchDate.fullYear) + 
-						" at " + String(zeroPad(planVec[i].launchDate.hours,2)) + ":"+String(zeroPad(planVec[i].launchDate.minutes,2))+":"+String(zeroPad(planVec[i].launchDate.seconds,2)) + '\n';
-					plan += "Attack land time: " + String(zeroPad(planVec[i].landingDate.date, 2)) + "/" + String(zeroPad(planVec[i].landingDate.month+1,2)) + "/" + String(planVec[i].landingDate.fullYear) + 
-						" at " + String(zeroPad(planVec[i].landingDate.hours,2)) + ":"+String(zeroPad(planVec[i].landingDate.minutes,2))+":"+String(zeroPad(planVec[i].landingDate.seconds,2)) + '\n';
-					plan += "Fake: " + (planVec[i].fake ? "yes" : "no") + '\n';
-					plan += "Slowest unit: " + (planVec[i].fake ? planVec[i].fakeUnitType : planVec[i].attackUnitType) + '\n\n';
+					if(fake == true) {
+						type = "fake"; 
+					} else {
+						if(planVec[i].attackUnitType != AttComponent.SNOB) {
+							type = "normal";
+						} else if(planVec[i].attackUnitType == AttComponent.SNOB) {
+							type = "noble";
+						}
+					}
+					
+					plan += "Origin: " + planVec[i].originName + ' (' + String(planVec[i].origin.x) + "|" + String(planVec[i].origin.y) + ")\n";
+					plan += "Target: " + planVec[i].targetName + ' (' + String(planVec[i].target.x) + "|" + String(planVec[i].target.y) + ")\n";
+					plan += "Launch time (UTC): " + formatDateToUTC(planVec[i].launchDate) + '\n';
+					plan += "Launch time (Local): " + formateDateToLocal(planVec[i].launchDate) + '\n';
+					plan += "Attack land time (UTC): " + formatDateToUTC(planVec[i].landingDate) + '\n'; 
+					plan += "Type: " + type + '\n';
+					plan += "Slowest unit: " + planVec[i].attackUnitType + '\n\n';
 				}
+				
 				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, "");
 				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, plan);
-				statusTxt.text = "Plan copied to clipboard";
+				
+				statusTxt.text = "Earliest Launch Time (UTC): " + formatDateToUTC(planVec[0].launchDate) + " | Land Time (UTC): " + formatDateToUTC(planVec[0].landingDate);
+				statusTxt2.text = "Earliest Launch Time (Local): " + formateDateToLocal(planVec[0].launchDate) + " | Land Time (Local): " + formateDateToLocal(planVec[0].landingDate);
+				
+				saveBtn.enabled = true;
 			}
 			
 			private function sortByLaunchTime(a:Attack, b:Attack):Number
@@ -237,67 +266,10 @@
 				}
 			}
 			
-			private function calculateDistance(start:Point, end:Point):Number {
-				var dy:Number = start.y - end.y;
-				var dx:Number = start.x - end.x;
-				
-				if(dy % 2) {
-					dx += start.y % 2 ? 0.5 : -0.5;
-				}
-				
-				return Math.sqrt(dx * dx + dy * dy * 0.75);
-			}
-			
-			private function calculateArmySpeed(unit:String, worldSpeed:Number):Number {
-				var baseUnitSpeed:Number;
-				
-				switch (unit) {
-					case Units.SPEAR:
-						baseUnitSpeed = Units.SPEAR_SPEED;
-						break;
-					case Units.SWORD:
-						baseUnitSpeed = Units.SWORD_SPEED;
-						break;
-					case Units.AXE:
-						baseUnitSpeed = Units.AXE_SPEED;
-						break;
-					case Units.ARCHER:
-						baseUnitSpeed = Units.ARCHER_SPEED;
-						break;
-					case Units.LC:
-						baseUnitSpeed = Units.LC_SPEED;
-						break;
-					case Units.MA:
-						baseUnitSpeed = Units.MA_SPEED;
-						break;
-					case Units.HC:
-						baseUnitSpeed = Units.HC_SPEED;
-						break;
-					case Units.RAM:
-						baseUnitSpeed = Units.RAM_SPEED;
-						break;
-					case Units.CAT:
-						baseUnitSpeed = Units.CAT_SPEED;
-						break;
-					case Units.SERK:
-						baseUnitSpeed = Units.SERK_SPEED;
-						break;
-					case Units.TREB:
-						baseUnitSpeed = Units.TREB_SPEED;
-						break;
-					case Units.SNOB:
-						baseUnitSpeed = Units.SNOB_SPEED;
-						break;
-					case Units.KNIGHT:
-						baseUnitSpeed = Units.KNIGHT_SPEED;
-						break;
-				}
-				return int((baseUnitSpeed/worldSpeed*60)*100)/100; //in seconds
-			}
-			
 			protected function inputs_changedHandler(event:TextOperationEvent):void
 			{
 				statusTxt.text = "";
+				statusTxt2.text = "";
 			}
 			
 			private function zeroPad(number:int, width:int):String {
@@ -309,29 +281,96 @@
 			
 			protected function clearMatchupsBtn_clickHandler(event:MouseEvent):void
 			{
+				statusTxt.text = "";
+				statusTxt2.text = "";
 				attComponents.length = 0;
 				attCompGroup.removeAllElements();
 			}
 			
 			protected function massFakerBtn_clickHandler(event:MouseEvent):void
 			{
-				landingTime = new Date(attDate.selectedDate);
-				landingTime.hours = attHour.value;
-				landingTime.minutes = attMin.value;
-				landingTime.seconds = attSec.value;
+				planVec.length = 0;
 				
-				for(var i:uint = 0; i < attV_coor.length; i++) {
-					for(var j:uint = 0; j < tarV_coor.length; j++) {
+				landingTime = new Date();
+				
+				landingTime.dateUTC = attDate.selectedDate.date;
+				landingTime.monthUTC = attDate.selectedDate.month;
+				landingTime.fullYearUTC = attDate.selectedDate.fullYear;
+				landingTime.hoursUTC = attHour.value;
+				landingTime.minutesUTC = attMin.value;
+				landingTime.secondsUTC = attSec.value;
+				
+				var nF:Number = 0;
+				if(numFakesTxt.text != "") {
+					if(Number(numFakesTxt.text) > attV_coor.length) {
+						nF = attV_coor.length;
+					} else {
+						nF = Number(numFakesTxt.text);
+					}
+				} else {
+					nF = attV_coor.length;
+				}
+				
+				for(var j:uint = 0; j < tarV_coor.length; j++) {
+					for(var i:uint = 0; i < nF; i++) {
+						var attVCoorIndex:Number = Math.floor(Math.random()*attV_coor.length);
 						var fakeLandingTime1:Date = new Date(landingTime);
-						var fakeTravelTime_inSeconds1:Number = calculateDistance(attV_coor[i], tarV_coor[j])*calculateArmySpeed(Units.RAM, Number(worldSpeedTxt.text));
-						var fakeStartTime1:Date = new Date(fakeLandingTime1.valueOf()-fakeTravelTime_inSeconds1*1000);
-						var fakeAttack1:Attack = new Attack(attV_coor[i], attV_name[i], tarV_coor[j], tarV_name[j], landingTime, fakeStartTime1, null, Units.RAM);
+						var fakeTravelTime_inSeconds1:Number = Attack.calculateTravelTime(attV_coor[attVCoorIndex], tarV_coor[j], Units.RAM, Number(worldSpeedTxt.text));
+						var fakeStartTime1:Date = Attack.calculateLaunchTime(fakeTravelTime_inSeconds1, fakeLandingTime1);
+						var fakeAttack1:Attack = new Attack(attV_coor[attVCoorIndex], attV_name[attVCoorIndex], attV_id[attVCoorIndex], tarV_coor[j], tarV_name[j], tarV_id[j], landingTime, fakeStartTime1, Units.RAM);
 						planVec.push(fakeAttack1);
 					}
 				}
 				
-				outputPlan();
+				outputPlan(true);
 			}
+			
+			protected function condenseBtn_clickHandler(event:MouseEvent):void
+			{
+				attCompGroup.removeAllElements();
+				for(var i:Number = 0; i < attComponents.length; i++) {
+					if(attComponents[i].target == null) {
+						attComponents.splice(i, 1);
+					} else {
+						attCompGroup.addElement(attComponents[i]);
+					}
+				}
+			}
+			
+			protected function saveBtn_clickHandler(event:MouseEvent):void
+			{
+				var saveContent:Vector.<Attack> = planVec.slice();
+				
+				saveFR = new FileReference();
+				saveFR.save(JSON.stringify(saveContent), "plan.json");
+			}
+			
+			protected function loadBtn_clickHandler(event:MouseEvent):void
+			{
+				file = new FileReference();
+				file.addEventListener(Event.SELECT, onFileSelected);
+				file.addEventListener(Event.COMPLETE, onFileLoaded);
+				file.browse([new FileFilter("JSON file", "*.json")]);
+			}
+			
+			protected function onFileSelected(event:Event):void
+			{
+				file.load();
+			}
+			
+			protected function onFileLoaded(event:Event):void
+			{
+				loaded = new Vector.<Attack>();
+				var targets:Array = new Array();
+				
+				var obj:Object = JSON.parse(file.data.toString());
+				for(var i:uint = 0; i < obj.length; i++) {
+					loaded.push(new Attack(	new Point(obj[i].origin[0], obj[i].origin[1]), obj[i].originName, obj[i].originId,
+						new Point(obj[i].target[0], obj[i].target[1]), obj[i].targetName, obj[i].targetId,
+						new Date(Date.parse(obj[i].landingDate)), new Date(Date.parse(obj[i].launchDate)), obj[i].attackUnitType));
+				}
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -343,43 +382,55 @@
 	</s:layout>
 	<s:HGroup width="100%" height="20%">
 		<s:VGroup height="100%" width="50%">
-			<s:Label fontSize="12" fontWeight="bold" text="Attacking villages"/>
+			<s:Label fontSize="12" fontWeight="bold" text="Attacking villages (1)"/>
 			<s:TextArea id="attVilsTxt" width="100%" height="100%"
 						change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]"/>
 		</s:VGroup>
 		<s:VGroup height="100%" width="50%">
-			<s:Label fontSize="12" fontWeight="bold" text="Target villages"/>
+			<s:Label fontSize="12" fontWeight="bold" text="Target villages (1)"/>
 			<s:TextArea id="targetsTxt" width="100%" height="100%"
 						change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]"/>
 		</s:VGroup>
 	</s:HGroup>
 	<s:VGroup horizontalAlign="center">
 		<s:HGroup verticalAlign="middle">
-			<s:Button id="parseInputsBtn" label="Parse Inputs" click="parseInputsBtn_clickHandler(event)"/>
+			<s:Button id="parseInputsBtn" label="Parse Inputs (2)" click="parseInputsBtn_clickHandler(event)"/>
 			<s:Button id="clearMatchupsBtn" label="Clear Plan Nodes" click="clearMatchupsBtn_clickHandler(event)"/>
-			<s:Button id="massFakerBtn" label="Mass Faker" click="massFakerBtn_clickHandler(event)"
+			<s:Button id="massFakerBtn" label="Mass Faker (4)" click="massFakerBtn_clickHandler(event)"
 					  enabled="false"/>
-			<s:Button id="makePlanBtn" label="Make Plan" click="makePlanBtn_clickHandler(event)"
+			<s:TextInput id="numFakesTxt" width="149" prompt="max # of fakes/village (4)"/>
+			<s:Button id="makePlanBtn" label="Make Plan (4)" click="makePlanBtn_clickHandler(event)"
 					  enabled="false"/>
 		</s:HGroup>
-		<s:Label text="UTC DD/MM/YY (24-hour)"/>
+		<s:Label fontWeight="bold"
+				 text="UTC DD/MM/YY (24-hour) - Plan automatically copied to clipboard"/>
 		<s:HGroup textAlign="center" verticalAlign="middle">
-			<mx:DateField id="attDate" change="makePlan(event)" formatString="DD/MM/YY"/>
-			<s:NumericStepper id="attHour" change="makePlan(event)" maximum="23" minimum="0"
+			<s:Label text="(3)"/>
+			<mx:DateField id="attDate" change="enablePlanMakers(event)" formatString="DD/MM/YY"/>
+			<s:NumericStepper id="attHour" change="enablePlanMakers(event)" maximum="23" minimum="0"
 							  stepSize="1"/>
 			<s:Label text=":"/>
-			<s:NumericStepper id="attMin" change="makePlan(event)" maximum="59" minimum="0"
+			<s:NumericStepper id="attMin" change="enablePlanMakers(event)" maximum="59" minimum="0"
 							  stepSize="1"/>
 			<s:Label text=":"/>
-			<s:NumericStepper id="attSec" change="makePlan(event)" maximum="59" minimum="0"
+			<s:NumericStepper id="attSec" change="enablePlanMakers(event)" maximum="59" minimum="0"
 							  stepSize="0"/>
 			<s:Label text="World Speed"/>
 			<s:TextInput id="worldSpeedTxt" width="30" prompt="1" text="1" textAlign="center"/>
 			<s:Spacer width="20" height="10"/>
 		</s:HGroup>
 	</s:VGroup>
+	<s:HGroup>
+		<s:Button id="condenseBtn" label="Condense" click="condenseBtn_clickHandler(event)"
+				  enabled="false"/>
+		<s:Button id="saveBtn" label="Save as JSON" click="saveBtn_clickHandler(event)" enabled="false"/>
+	</s:HGroup>
+	
 	<s:Label id="statusTxt" width="100%" textAlign="center" verticalAlign="middle"/>
+	<s:Label id="statusTxt2" width="100%" textAlign="center" verticalAlign="middle"/>
 	<s:Scroller id="scroller" horizontalScrollPolicy="auto" height="100%" width="100%">
-		<s:TileGroup id="attCompGroup" width="100%" height="100%" horizontalAlign="center"></s:TileGroup>
+		<s:TileGroup id="attCompGroup" width="100%" height="100%" horizontalAlign="center"
+					 orientation="columns" textAlign="center" verticalAlign="top">
+		</s:TileGroup>
 	</s:Scroller>
 </s:Application>

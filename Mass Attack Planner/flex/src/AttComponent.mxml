@@ -2,12 +2,8 @@
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
 				   xmlns:s="library://ns.adobe.com/flex/spark"
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
-				   width="816" height="42" borderStyle="solid" creationComplete="init(event)"
+				   width="977" height="42" borderStyle="solid" creationComplete="init(event)"
 				   >
-	<s:layout>
-		<s:HorizontalLayout gap="5" paddingBottom="5" paddingLeft="5" paddingRight="5"
-							paddingTop="5" verticalAlign="middle"/>
-	</s:layout>
 	<fx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
@@ -31,16 +27,21 @@
 			static public const KNIGHT:String = "paladin";
 			
 			[Bindable]
-			private var _villageCoor:Point;
+			private var _originCoor:Point;
 			[Bindable]
-			private var _villageName:String;
+			private var _originName:String;
+			private var _originId:Number;
 			
-			private var _fakeUnit:String;
 			private var _attUnit:String;
 			private var _targets:Vector.<Point>;
-			private var _target:Point;
-			private var _targetName:String;
+			
+			private var _targetCoor:Point;
+			private var _targetName:String = "";
+			private var _targetId:Number;
+
 			private var _first:Boolean;
+			
+			private var _worldSpeed:Number;
 			
 			[Bindable]
 			private var _unitsList:Array;
@@ -48,6 +49,36 @@
 			[Bindable]
 			private var _targetsList:ArrayCollection;
 			
+			public function get worldSpeed():Number
+			{
+				return _worldSpeed;
+			}
+
+			public function set worldSpeed(value:Number):void
+			{
+				_worldSpeed = value;
+			}
+
+			public function get targetId():Number
+			{
+				return _targetId;
+			}
+
+			public function set targetId(value:Number):void
+			{
+				_targetId = value;
+			}
+
+			public function get villageId():Number
+			{
+				return _originId;
+			}
+
+			public function set villageId(value:Number):void
+			{
+				_originId = value;
+			}
+
 			public function get targetName():String
 			{
 				return _targetName;
@@ -60,12 +91,12 @@
 
 			public function get villageName():String
 			{
-				return _villageName;
+				return _originName;
 			}
 
 			public function set villageName(value:String):void
 			{
-				_villageName = value;
+				_originName = value;
 			}
 
 			public function get first():Boolean
@@ -80,12 +111,12 @@
 
 			public function get target():Point
 			{
-				return _target;
+				return _targetCoor;
 			}
 
 			public function set target(value:Point):void
 			{
-				_target = value;
+				_targetCoor = value;
 			}
 
 			public function get attUnit():String
@@ -98,29 +129,20 @@
 				_attUnit = value;
 			}
 
-			public function get fakeUnit():String
-			{
-				return _fakeUnit;
-			}
-
-			public function set fakeUnit(value:String):void
-			{
-				_fakeUnit = value;
-			}
-
 			public function get villageCoor():Point
 			{
-				return _villageCoor;
+				return _originCoor;
 			}
 
 			public function set villageCoor(value:Point):void
 			{
-				_villageCoor = value;
+				_originCoor = value;
 			}
 
 			protected function init(event:FlexEvent):void
 			{
 				_unitsList = new Array(SPEAR, SWORD, AXE, ARCHER, LC, MA, HC, RAM, CAT, SERK, TREB, SNOB, KNIGHT);
+//				_unitsList = new Array(RAM, SNOB);
 			}
 			
 			protected function attUnitType_changeHandler(event:IndexChangeEvent):void
@@ -133,17 +155,23 @@
 					prioritzeAttackCB.enabled = false;
 					prioritzeAttackCB.selected = false;
 				}
+				
+				if(_targetName != "") {
+					travelTimeLbl.text = Attack.formatTimerPeriod(Attack.calculateTravelTime(_originCoor, _targetCoor, String(attUnitType.selectedItem), worldSpeed));
+				}
+				
 			}
 			
 			protected function targetVillages_changeHandler(event:IndexChangeEvent):void
 			{
 				var startIndexCoor:uint = String(targetVillages.selectedItem).length - 8;
-				var targetNameRegex:RegExp = /(.+)\s+\([0-9]+\|[0-9]+\)/;
-				_target = new Point(Number(String(targetVillages.selectedItem).substr(startIndexCoor, 3)), Number(String(targetVillages.selectedItem).substr(startIndexCoor+4,3)));
+				var targetNameRegex:RegExp = /(.+)\s+\(([0-9]+)\|([0-9]+)\)\s*(.+)*/;
 				
 				var obj:Object = targetNameRegex.exec(String(targetVillages.selectedItem));
 				if(obj != null) {
 					_targetName = obj[1];
+					_targetCoor = new Point(Number(obj[2]), Number(obj[3]));
+					_targetId = Number(obj[4]);
 				} else {
 					_targetName = "";
 				}
@@ -158,7 +186,6 @@
 			{
 				this.setStyle('borderColor', 0xb7babc);
 				targetVillages.selectedIndex = -1;
-				fakeUnitType.selectedIndex = -1;
 				attUnitType.selectedIndex = -1;
 			}
 			
@@ -168,39 +195,28 @@
 				return ret;
 			}
 			
-			protected function fakeUnitType_changeHandler(event:IndexChangeEvent):void
-			{
-				this.setStyle('borderColor', 0x386838);
-				if(attUnitType.selectedIndex != -1) {
-					if(attUnitType.selectedItem != SNOB) {
-						this.setStyle("borderColor", 0xFF0000);
-					} else {
-						this.setStyle("borderColor", 0x8F01DD);
-					}
-				}
-			}
-			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	
+	<s:layout>
+		<s:HorizontalLayout gap="5" paddingBottom="5" paddingLeft="5" paddingRight="5"
+							paddingTop="5" verticalAlign="middle"/>
+	</s:layout>
 	
-	<s:Label width="176" text="{_villageName}"/>
-	<s:Label width="50" text="{_villageCoor.x}|{_villageCoor.y}" textAlign="center" verticalAlign="middle"/>
+	<s:Label width="176" text="{_originName}" textAlign="left"/>
+	<s:Label width="50" text="{_originCoor.x}|{_originCoor.y}" textAlign="center" verticalAlign="middle"/>
 	
 	<s:HGroup gap="0" verticalAlign="bottom">
-		<s:DropDownList id="targetVillages" width="186" prompt="select a target..." dataProvider="{_targetsList}" change="targetVillages_changeHandler(event)"></s:DropDownList>		
+		<s:DropDownList id="targetVillages" width="186" change="targetVillages_changeHandler(event)"
+						dataProvider="{_targetsList}" prompt="select a target..." textAlign="left"></s:DropDownList>		
 	</s:HGroup>
 	
 	<s:HGroup gap="0" verticalAlign="middle">
-		<s:DropDownList id="fakeUnitType" width="128" prompt="fake unit type" toolTip="Fake attack unit" change="fakeUnitType_changeHandler(event)">
-			<s:dataProvider>
-				<s:ArrayList source="{_unitsList}"></s:ArrayList>
-			</s:dataProvider>
-		</s:DropDownList>
-		<s:DropDownList id="attUnitType" width="128" prompt="attack unit type" change="attUnitType_changeHandler(event)" toolTip="Attack unit type">
+		<s:DropDownList id="attUnitType" width="128" change="attUnitType_changeHandler(event)"
+						prompt="attack unit type" textAlign="left" toolTip="Attack unit type">
 			<s:dataProvider>
 				<s:ArrayList source="{_unitsList}"></s:ArrayList>
 			</s:dataProvider>
@@ -209,4 +225,6 @@
 	<s:CheckBox id="prioritzeAttackCB" height="19" label="First" click="prioritizeAttCB_clickHandler(event)"
 				enabled="true"/>
 	<s:Button id="clearBtn" width="60" label="Clear" click="clearBtn_clickHandler(event)"/>
+	<s:Label fontWeight="bold" text="Travel time:"/><s:Label id="travelTimeLbl" width="210"
+															 textAlign="left"/>
 </s:BorderContainer>
