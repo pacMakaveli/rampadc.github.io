@@ -2,7 +2,7 @@
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
 				   xmlns:s="library://ns.adobe.com/flex/spark"
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
-				   width="977" height="42" borderStyle="solid" creationComplete="init(event)"
+				   width="983" height="42" borderStyle="solid" creationComplete="init(event)"
 				   >
 	<fx:Script>
 		<![CDATA[
@@ -210,7 +210,7 @@
 	<s:Label width="50" text="{_originCoor.x}|{_originCoor.y}" textAlign="center" verticalAlign="middle"/>
 	
 	<s:HGroup gap="0" verticalAlign="bottom">
-		<s:DropDownList id="targetVillages" width="186" change="targetVillages_changeHandler(event)"
+		<s:DropDownList id="targetVillages" width="262" change="targetVillages_changeHandler(event)"
 						dataProvider="{_targetsList}" prompt="select a target..." textAlign="left"></s:DropDownList>		
 	</s:HGroup>
 	
@@ -225,6 +225,6 @@
 	<s:CheckBox id="prioritzeAttackCB" height="19" label="First" click="prioritizeAttCB_clickHandler(event)"
 				enabled="true"/>
 	<s:Button id="clearBtn" width="60" label="Clear" click="clearBtn_clickHandler(event)"/>
-	<s:Label fontWeight="bold" text="Travel time:"/><s:Label id="travelTimeLbl" width="210"
+	<s:Label fontWeight="bold" text="Travel time:"/><s:Label id="travelTimeLbl" width="151"
 															 textAlign="left"/>
 </s:BorderContainer>
