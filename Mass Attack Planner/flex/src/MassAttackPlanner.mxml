@@ -421,16 +421,15 @@
 		</s:HGroup>
 	</s:VGroup>
 	<s:HGroup>
-		<s:Button id="condenseBtn" label="Condense" click="condenseBtn_clickHandler(event)"
+		<s:Button id="condenseBtn" label="Condense (5)" click="condenseBtn_clickHandler(event)"
 				  enabled="false"/>
-		<s:Button id="saveBtn" label="Save as JSON" click="saveBtn_clickHandler(event)" enabled="false"/>
+		<s:Button id="saveBtn" label="Save as JSON (5)" click="saveBtn_clickHandler(event)" enabled="false"/>
 	</s:HGroup>
 	
 	<s:Label id="statusTxt" width="100%" textAlign="center" verticalAlign="middle"/>
 	<s:Label id="statusTxt2" width="100%" textAlign="center" verticalAlign="middle"/>
 	<s:Scroller id="scroller" horizontalScrollPolicy="auto" height="100%" width="100%">
-		<s:TileGroup id="attCompGroup" width="100%" height="100%" horizontalAlign="center"
-					 orientation="columns" textAlign="center" verticalAlign="top">
-		</s:TileGroup>
+		<s:VGroup id="attCompGroup" width="100%" height="100%" horizontalAlign="center" textAlign="center" verticalAlign="top">
+		</s:VGroup>
 	</s:Scroller>
 </s:Application>
