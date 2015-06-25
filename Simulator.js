@@ -126,7 +126,7 @@ Simulator = {
             "build_time": 3200,
             "attack": 150,
             "def_inf": 200,
-            "def_kav": 80,
+            "def_kav": 160,
             "def_arc": 180,
             "speed": 9,
             "load": 50,
