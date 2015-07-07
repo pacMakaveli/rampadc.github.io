@@ -17,6 +17,7 @@
 			import mx.events.FlexEvent;
 			import mx.events.ResizeEvent;
 			
+			import spark.events.IndexChangeEvent;
 			import spark.events.TextOperationEvent;
 			
 			private var villageRegex:RegExp = new RegExp(/\((.+)\)\[([0-9]+)\|([0-9]+)\]/gm);
@@ -377,6 +378,23 @@
 				}
 			}
 			
+			protected function layoutsBtn_changeHandler(event:IndexChangeEvent):void
+			{
+				trace(event.target.selectedItem);
+				switch(event.target.selectedItem) {
+					case "Layout 1":
+						currentState = "Layout1";
+						break;
+					case "Layout 2":
+						currentState = "Layout2";
+						break;
+					case undefined:
+						currentState = "Layout1";
+						layoutsBtn.selectedIndex = 0;
+						break;
+				}
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -384,66 +402,104 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	
-	<s:layout>
+	
+	<s:states>
+		<s:State name="Layout1"/>
+		<s:State name="Layout2"/>
+	</s:states>
+	
+	<s:layout.Layout1>
 		<s:VerticalLayout paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" horizontalAlign="center"/>
-	</s:layout>
-	<s:HGroup width="100%" height="20%">
-		<s:VGroup height="100%" width="50%">
-			<s:Label fontSize="12" fontWeight="bold" text="Attacking villages (1)"/>
+	</s:layout.Layout1>
+	<s:layout.Layout2>
+		<s:HorizontalLayout paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10"/>
+	</s:layout.Layout2>
+	
+	<s:Group width="100%" height="20%"
+			 height.Layout2="100%"
+			 minWidth.Layout2="250"
+			 width.Layout2="35%">
+		<s:layout.Layout1>
+			<s:HorizontalLayout/>
+		</s:layout.Layout1>
+		<s:layout.Layout2>
+			<s:VerticalLayout/>
+		</s:layout.Layout2>
+		
+		<s:VGroup height="100%" width="50%"
+				  width.Layout2="100%">
+			<s:Label id="lbl1" fontSize="12" fontWeight="bold" text="Attacking villages (1)"/>
 			<s:TextArea id="attVilsTxt" width="100%" height="100%"
 						change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]"
-						text="(012356789012345678912345)[000|000]"/>
+						/>
 		</s:VGroup>
-		<s:VGroup height="100%" width="50%">
+		<s:VGroup width="50%" height="100%"
+				  width.Layout2="100%">
 			<s:Label fontSize="12" fontWeight="bold" text="Target villages (1)"/>
 			<s:TextArea id="targetsTxt" width="100%" height="100%"
 						change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]"/>
 		</s:VGroup>
-	</s:HGroup>
-	<s:VGroup horizontalAlign="center">
-		<s:HGroup verticalAlign="middle">
-			<s:Button id="parseInputsBtn" label="Parse Inputs (2)" click="parseInputsBtn_clickHandler(event)"/>
-			<s:Button id="clearMatchupsBtn" label="Clear Plan Nodes" click="clearMatchupsBtn_clickHandler(event)"/>
-			<s:TextInput id="numFakesTxt" width="149" prompt="max # of fakes/village (4)"/>
-		</s:HGroup>
-		<s:HGroup textAlign="center" verticalAlign="middle">
-			<s:Label text="(3)"/>
-			<mx:DateField id="attDate" change="enablePlanMakers(event)" formatString="DD/MM/YY"/>
-			<s:NumericStepper id="attHour" change="enablePlanMakers(event)" maximum="23" minimum="0"
-							  stepSize="1"/>
-			<s:Label text=":"/>
-			<s:NumericStepper id="attMin" change="enablePlanMakers(event)" maximum="59" minimum="0"
-							  stepSize="1"/>
-			<s:Label text=":"/>
-			<s:NumericStepper id="attSec" change="enablePlanMakers(event)" maximum="59" minimum="0"
-							  stepSize="0"/>
-			<s:Label text="World Speed"/>
-			<s:TextInput id="worldSpeedTxt" width="30" prompt="1" text="1" textAlign="center"/>
-		</s:HGroup>
-	</s:VGroup>
-	<s:Label fontWeight="bold"
-			 text="UTC DD/MM/YY (24-hour) - Plan automatically copied to clipboard"/>
-	<s:HGroup verticalAlign="baseline">
-		<s:Button id="makePlanBtn" label="Make Plan (4)" click="makePlanBtn_clickHandler(event)"
-				  enabled="false"/>
-		<s:Spacer width="10" height="10"/>
-		<s:Button id="massFakerBtn" label="Mass Faker (4)" click="massFakerBtn_clickHandler(event)"
-				  enabled="false"/>
-		<s:Label text="Fake type:"/>
-		<s:DropDownList id="fakeTypeSelect" width="91" prompt="Fake type" selectedIndex="0" dataProvider="{fakeTypes}">
-		</s:DropDownList>
-		
-	</s:HGroup>
-	<s:HGroup>
-		<s:Button id="condenseBtn" label="Condense (5)" click="condenseBtn_clickHandler(event)"
-				  enabled="false"/>
-		<s:Button id="saveBtn" label="Save as JSON (5)" click="saveBtn_clickHandler(event)" enabled="false"/>
-	</s:HGroup>
+	</s:Group>
 	
-	<s:Label id="statusTxt" width="100%" textAlign="center" verticalAlign="middle"/>
-	<s:Label id="statusTxt2" width="100%" textAlign="center" verticalAlign="middle"/>
-	<s:Scroller id="scroller" horizontalScrollPolicy="auto" height="100%" width="100%">
-		<s:VGroup id="attCompGroup" width="100%" height="100%" horizontalAlign="center" textAlign="center" verticalAlign="top">
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout horizontalAlign="center"/>
+		</s:layout>
+		<s:Spacer includeIn="Layout2" height="10"/>
+		<s:VGroup horizontalAlign="center">
+			<s:HGroup verticalAlign="middle">
+				<s:Button id="parseInputsBtn" label="Parse Inputs (2)" click="parseInputsBtn_clickHandler(event)"/>
+				<s:Button id="clearMatchupsBtn" label="Clear Plan Nodes" click="clearMatchupsBtn_clickHandler(event)"/>
+				<s:ButtonBar id="layoutsBtn" change="layoutsBtn_changeHandler(event)"
+							 selectedIndex.Layout1="0"
+							 selectedIndex.Layout2="1">  
+					<mx:ArrayCollection>
+						<fx:String>Layout 1</fx:String> 
+						<fx:String>Layout 2</fx:String> 
+					</mx:ArrayCollection>
+				</s:ButtonBar>
+			</s:HGroup>
+			<s:HGroup textAlign="center" verticalAlign="middle">
+				<s:Label text="(3)"/>
+				<mx:DateField id="attDate" change="enablePlanMakers(event)" formatString="DD/MM/YY"/>
+				<s:NumericStepper id="attHour" change="enablePlanMakers(event)" maximum="23" minimum="0"
+								  stepSize="1"/>
+				<s:Label text=":"/>
+				<s:NumericStepper id="attMin" change="enablePlanMakers(event)" maximum="59" minimum="0"
+								  stepSize="1"/>
+				<s:Label text=":"/>
+				<s:NumericStepper id="attSec" change="enablePlanMakers(event)" maximum="59" minimum="0"
+								  stepSize="0"/>
+				<s:Label text="World Speed"/>
+				<s:TextInput id="worldSpeedTxt" width="30" prompt="1" text="1" textAlign="center"/>
+			</s:HGroup>
+			<s:Label fontWeight="bold"
+					 text="UTC DD/MM/YY (24-hour) - Plan automatically copied to clipboard"/>
+			<s:HGroup verticalAlign="baseline">
+				<s:Button id="makePlanBtn" label="Make Plan (4)" click="makePlanBtn_clickHandler(event)"
+						  enabled="false"/>
+				<s:Spacer width="10" height="10"/>
+				<s:Button id="massFakerBtn" label="Mass Faker (4)" click="massFakerBtn_clickHandler(event)"
+						  enabled="false"/>
+				<s:Label text="Fake type:"/>
+				<s:DropDownList id="fakeTypeSelect" width="91" prompt="Fake type" selectedIndex="0" dataProvider="{fakeTypes}">
+				</s:DropDownList>
+				<s:TextInput id="numFakesTxt" width="120" prompt="# of fakes/village (4)"/>
+				
+			</s:HGroup>
+			<s:HGroup>
+				<s:Button id="condenseBtn" label="Condense (5)" click="condenseBtn_clickHandler(event)"
+						  enabled="false"/>
+				<s:Button id="saveBtn" label="Save as JSON (5)" click="saveBtn_clickHandler(event)" enabled="false"/>
+			</s:HGroup>
 		</s:VGroup>
-	</s:Scroller>
+		<s:VGroup width="100%">
+			<s:Label id="statusTxt" width="100%" textAlign="center" verticalAlign="middle"/>
+			<s:Label id="statusTxt2" width="100%" textAlign="center" verticalAlign="middle"/>
+		</s:VGroup>
+		<s:Scroller id="scroller" horizontalScrollPolicy="auto" height="100%" width="100%">
+			<s:VGroup id="attCompGroup" width="100%" height="100%" horizontalAlign="center" textAlign="center" verticalAlign="top">
+			</s:VGroup>
+		</s:Scroller>
+	</s:Group>
 </s:Application>
