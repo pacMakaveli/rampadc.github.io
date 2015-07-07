@@ -12,6 +12,7 @@
 			import flash.desktop.ClipboardFormats;
 			import flash.globalization.DateTimeFormatter;
 			
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 			import mx.events.ResizeEvent;
@@ -37,6 +38,9 @@
 			private var saveFR:FileReference;
 			private var file:FileReference;
 			private var loaded:Vector.<Attack>;
+			
+			[Bindable]
+			public var fakeTypes:ArrayCollection = new ArrayCollection([Units.RAM, Units.TREB]);
 			
 			protected function init(event:FlexEvent):void
 			{
@@ -221,7 +225,9 @@
 			
 			private function outputPlan(fake:Boolean):void {
 				planVec = planVec.sort(sortByLaunchTime);
+				
 				plan = "//Earliest launch time (UTC): "+ formatDateToUTC(planVec[0].launchDate) +"\n";
+				plan += "//Earliest launch time (Local): " + formateDateToLocal(planVec[0].launchDate) + "\n";
 				plan += "//Landing time (UTC): "+formatDateToUTC(landingTime)+"\n\n";
 				
 				var type:String = "";
@@ -315,9 +321,9 @@
 					for(var i:uint = 0; i < nF; i++) {
 						var attVCoorIndex:Number = Math.floor(Math.random()*attV_coor.length);
 						var fakeLandingTime1:Date = new Date(landingTime);
-						var fakeTravelTime_inSeconds1:Number = Attack.calculateTravelTime(attV_coor[attVCoorIndex], tarV_coor[j], Units.RAM, Number(worldSpeedTxt.text));
+						var fakeTravelTime_inSeconds1:Number = Attack.calculateTravelTime(attV_coor[attVCoorIndex], tarV_coor[j], String(fakeTypeSelect.selectedItem), Number(worldSpeedTxt.text));
 						var fakeStartTime1:Date = Attack.calculateLaunchTime(fakeTravelTime_inSeconds1, fakeLandingTime1);
-						var fakeAttack1:Attack = new Attack(attV_coor[attVCoorIndex], attV_name[attVCoorIndex], attV_id[attVCoorIndex], tarV_coor[j], tarV_name[j], tarV_id[j], landingTime, fakeStartTime1, Units.RAM);
+						var fakeAttack1:Attack = new Attack(attV_coor[attVCoorIndex], attV_name[attVCoorIndex], attV_id[attVCoorIndex], tarV_coor[j], tarV_name[j], tarV_id[j], landingTime, fakeStartTime1, String(fakeTypeSelect.selectedItem));
 						planVec.push(fakeAttack1);
 					}
 				}
@@ -396,14 +402,8 @@
 		<s:HGroup verticalAlign="middle">
 			<s:Button id="parseInputsBtn" label="Parse Inputs (2)" click="parseInputsBtn_clickHandler(event)"/>
 			<s:Button id="clearMatchupsBtn" label="Clear Plan Nodes" click="clearMatchupsBtn_clickHandler(event)"/>
-			<s:Button id="massFakerBtn" label="Mass Faker (4)" click="massFakerBtn_clickHandler(event)"
-					  enabled="false"/>
 			<s:TextInput id="numFakesTxt" width="149" prompt="max # of fakes/village (4)"/>
-			<s:Button id="makePlanBtn" label="Make Plan (4)" click="makePlanBtn_clickHandler(event)"
-					  enabled="false"/>
 		</s:HGroup>
-		<s:Label fontWeight="bold"
-				 text="UTC DD/MM/YY (24-hour) - Plan automatically copied to clipboard"/>
 		<s:HGroup textAlign="center" verticalAlign="middle">
 			<s:Label text="(3)"/>
 			<mx:DateField id="attDate" change="enablePlanMakers(event)" formatString="DD/MM/YY"/>
@@ -417,9 +417,21 @@
 							  stepSize="0"/>
 			<s:Label text="World Speed"/>
 			<s:TextInput id="worldSpeedTxt" width="30" prompt="1" text="1" textAlign="center"/>
-			<s:Spacer width="20" height="10"/>
 		</s:HGroup>
 	</s:VGroup>
+	<s:Label fontWeight="bold"
+			 text="UTC DD/MM/YY (24-hour) - Plan automatically copied to clipboard"/>
+	<s:HGroup verticalAlign="baseline">
+		<s:Button id="makePlanBtn" label="Make Plan (4)" click="makePlanBtn_clickHandler(event)"
+				  enabled="false"/>
+		<s:Spacer width="10" height="10"/>
+		<s:Button id="massFakerBtn" label="Mass Faker (4)" click="massFakerBtn_clickHandler(event)"
+				  enabled="false"/>
+		<s:Label text="Fake type:"/>
+		<s:DropDownList id="fakeTypeSelect" width="91" prompt="Fake type" selectedIndex="0" dataProvider="{fakeTypes}">
+		</s:DropDownList>
+		
+	</s:HGroup>
 	<s:HGroup>
 		<s:Button id="condenseBtn" label="Condense (5)" click="condenseBtn_clickHandler(event)"
 				  enabled="false"/>
