@@ -1,6 +1,5 @@
 var plan;
 var loaded;
-var beeped;
 
 window.onload = function() {
 	if(!window.File && window.FileReader) {
@@ -9,7 +8,6 @@ window.onload = function() {
 	}
 
 	loaded = 0;
-	beeped = 0;
 
 	initEventListeners();
 
@@ -67,18 +65,14 @@ function monitorPlan() {
 		var currentTime = new Date().getTime();
 		if(ltL >= (currentTime + 5*60*1000)) {
 			// 5 minutes before attack
-			if(!beeped) {
 				for(var i = 0; i < 5; i++) {
 					beep();
 				}
-				beeped = 1;
-			}
 		}
 
 		if(ltL <= currentTime) {
 			plan.splice(0, 1);
 			beep();
-			beeped = 0;
 		}
 
 		if(plan.length == 0) {
