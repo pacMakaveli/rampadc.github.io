@@ -1,5 +1,6 @@
 var plan;
 var loaded;
+var beeping;
 
 window.onload = function() {
 	if(!window.File && window.FileReader) {
@@ -8,6 +9,7 @@ window.onload = function() {
 	}
 
 	loaded = 0;
+	beeping = 1;
 
 	initEventListeners();
 
@@ -21,6 +23,11 @@ function initEventListeners() {
 		var reader = new FileReader();
 		reader.addEventListener('loadend', onFileLoaded);
 		reader.readAsText(files[0]);
+	});
+
+	$('#beepBtn').click(function() {
+		beeping = !beeping;
+		$('#beepBtn').text((beeping ? 'Beep: On' : 'Beep: Off'));
 	});
 }
 
@@ -63,16 +70,17 @@ function monitorPlan() {
 		var ltL = Date.parse(p.launchDate); //local time
 		var ltU = getUTCLaunchTimeStamp(p.launchDate);
 		var currentTime = new Date().getTime();
-		if(ltL >= (currentTime + 5*60*1000)) {
-			// 5 minutes before attack
-				for(var i = 0; i < 5; i++) {
-					beep();
-				}
+		if((ltL - currentTime < 5*60*1000) && (ltL - currentTime > 4.5*60*1000)) {
+			// 5 minutes before attack - beep for 30 seconds
+			if(beeping) {
+				beep();
+				console.log(ltL);
+				console.log(currentTime + 5*60*1000);
+			}
 		}
 
 		if(ltL <= currentTime) {
 			plan.splice(0, 1);
-			beep();
 		}
 
 		if(plan.length == 0) {
