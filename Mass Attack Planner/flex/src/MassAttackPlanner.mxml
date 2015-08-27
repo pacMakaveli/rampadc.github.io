@@ -224,6 +224,16 @@
 				return str;
 			}
 			
+			private function file_formatDateToUTC(d:Date):String {
+				var str:String = String(zeroPad(d.dateUTC,2)) + '.' + String(zeroPad(d.monthUTC+1,2)) +'.' + String(d.fullYearUTC) + ' at ' + String(zeroPad(d.hoursUTC,2)) + '.'+String(zeroPad(d.minutesUTC,2)) + '.'+String(zeroPad(d.secondsUTC,2));
+				return str;
+			}
+			
+			private function file_formateDateToLocal(d:Date):String {
+				var str:String = String(zeroPad(d.date,2)) + '.' + String(zeroPad(d.month+1,2)) +'.' + String(d.fullYear) + ' at ' + String(zeroPad(d.hours,2)) + '.'+String(zeroPad(d.minutes,2)) + '.'+String(zeroPad(d.seconds,2));
+				return str;
+			}
+			
 			private function outputPlan(fake:Boolean):void {
 				planVec = planVec.sort(sortByLaunchTime);
 				
@@ -348,8 +358,11 @@
 			{
 				var saveContent:Vector.<Attack> = planVec.slice();
 				
+				var fileName:String = "Launch (Local) " + file_formateDateToLocal(saveContent[0].launchDate) + " _ Land (UTC) " + file_formatDateToUTC(saveContent[0].landingDate);
+				fileName += ".json";
+				
 				saveFR = new FileReference();
-				saveFR.save(JSON.stringify(saveContent), "plan.json");
+				saveFR.save(JSON.stringify(saveContent), fileName);
 			}
 			
 			protected function loadBtn_clickHandler(event:MouseEvent):void
