@@ -270,6 +270,7 @@
 				statusTxt2.text = "Earliest Launch Time (Local): " + formateDateToLocal(planVec[0].launchDate) + " | Land Time (Local): " + formateDateToLocal(planVec[0].landingDate);
 				
 				saveBtn.enabled = true;
+				saveCSV_btn.enabled = true;
 			}
 			
 			private function sortByLaunchTime(a:Attack, b:Attack):Number
@@ -363,6 +364,37 @@
 				
 				saveFR = new FileReference();
 				saveFR.save(JSON.stringify(saveContent), fileName);
+			}
+			
+			protected function saveCSV_btn_clickHandler(event:MouseEvent):void
+			{
+				var saveContent:Vector.<Attack> = planVec.slice();
+				var fileName:String = "Launch (Local) " + file_formateDateToLocal(saveContent[0].launchDate) + " _ Land (UTC) " + file_formatDateToUTC(saveContent[0].landingDate);
+				fileName += ".csv";
+				
+				var csv:String = "Subject,Start date,Start time,All Day Event,Description,Private,Reminder On/Off, Reminder Date, Reminder Time\n";
+				
+				for(var i:Number = 0; i < saveContent.length; i++) {
+					csv += (saveContent[i].attackUnitType == Units.SNOB ? "Noble" : "Attack") + ","; // Subject
+					csv += String(zeroPad(saveContent[i].launchDate.date,2)) + '/' + String(zeroPad(saveContent[i].launchDate.month+1,2)) +'/' + String(saveContent[i].launchDate.fullYear) + ","; // Start date
+					csv += String(zeroPad(saveContent[i].launchDate.hours,2)) + ':'+String(zeroPad(saveContent[i].launchDate.minutes,2)) + ':'+String(zeroPad(saveContent[i].launchDate.seconds,2)) + ","; // Start time
+					csv += "False" + ","; // All day event
+					csv += saveContent[i].originName + " (" + String(saveContent[i].origin.x) + "|" + String(saveContent[i].origin.y) + ") >> " + 
+						saveContent[i].targetName + " (" + String(saveContent[i].target.x) + "|" + String(saveContent[i].target.y) + "),"; // Description
+					csv += "True" + ","; // Private
+					csv += "True" + ","; // Reminder ON
+					
+					var reminder:Date = new Date(saveContent[i].launchDate.time - 2*60*1000); // 2 minutes offset
+					
+					csv += String(zeroPad(reminder.date,2)) + '/' + String(zeroPad(reminder.month+1,2)) +'/' + String(reminder.fullYear) + ","; // Reminder date
+					csv += String(zeroPad(reminder.hours,2)) + ':'+String(zeroPad(reminder.minutes,2)) + ':'+String(zeroPad(reminder.seconds,2)) + "\n"; // Reminder time
+				}
+				
+				var saveBA:ByteArray = new ByteArray();
+				saveBA.writeUTFBytes(csv);
+				
+				saveFR = new FileReference();
+				saveFR.save(saveBA, fileName);
 			}
 			
 			protected function loadBtn_clickHandler(event:MouseEvent):void
@@ -504,6 +536,8 @@
 				<s:Button id="condenseBtn" label="Condense (5)" click="condenseBtn_clickHandler(event)"
 						  enabled="false"/>
 				<s:Button id="saveBtn" label="Save as JSON (5)" click="saveBtn_clickHandler(event)" enabled="false"/>
+				<s:Button id="saveCSV_btn" label="Save as CSV (5)"
+						  click="saveCSV_btn_clickHandler(event)" enabled="false"/>
 			</s:HGroup>
 		</s:VGroup>
 		<s:VGroup width="100%">
