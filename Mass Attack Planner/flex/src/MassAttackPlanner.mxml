@@ -357,9 +357,15 @@
 			
 			protected function saveBtn_clickHandler(event:MouseEvent):void
 			{
-				var saveContent:Vector.<Attack> = planVec.slice();
+				var saveContent:Vector.<Attack_Save> = new Vector.<Attack_Save>();
 				
-				var fileName:String = "Launch (Local) " + file_formateDateToLocal(saveContent[0].launchDate) + " _ Land (UTC) " + file_formatDateToUTC(saveContent[0].landingDate);
+				for(var i:Number = 0; i < planVec.length; i++) {
+					saveContent.push(new Attack_Save(
+						planVec[i].origin, planVec[i].originName, planVec[i].originId,
+						planVec[i].target, planVec[i].targetName, planVec[i].targetId,
+						planVec[i].landingDate, planVec[i].launchDate.time, planVec[i].attackUnitType));
+				}
+				var fileName:String = "Launch (Local) " + file_formateDateToLocal(planVec[0].launchDate) + " _ Land (UTC) " + file_formatDateToUTC(saveContent[0].landingDate);
 				fileName += ".json";
 				
 				saveFR = new FileReference();
