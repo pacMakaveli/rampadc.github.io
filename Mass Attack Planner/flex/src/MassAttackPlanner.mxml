@@ -3,7 +3,6 @@
 					   xmlns:s="library://ns.adobe.com/flex/spark"
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
 					   xmlns:local="*"
-					   minWidth="1024" minHeight="500"
 					   creationComplete="init(event)">
 	
 	<fx:Script>
@@ -109,7 +108,7 @@
 						ac.villageName = attV_name[i];
 						ac.villageId = attV_id[i];
 						ac.targetsList = targetsStr;
-						ac.worldSpeed = Number(worldSpeedTxt.text);
+						ac.worldSpeed = 1;
 						attComponents.push(ac);
 					}
 					statusTxt.text = "Placing UI Components...";
@@ -197,7 +196,7 @@
 							noble = true;
 						}
 						
-						var attTravelTime_inSeconds:Number = Attack.calculateDistance(origin, target)*Attack.calculateArmySpeed(attType, Number(worldSpeedTxt.text));
+						var attTravelTime_inSeconds:Number = Attack.calculateDistance(origin, target)*Attack.calculateArmySpeed(attType, 1);
 						var attStartTime:Date = Attack.calculateLaunchTime(attTravelTime_inSeconds, attLandingTime);
 						var attack:Attack = new Attack(origin, originName, originId, target, targetName, targetId, attLandingTime, attStartTime, attType);
 						planVec.push(attack);
@@ -270,7 +269,6 @@
 				statusTxt2.text = "Earliest Launch Time (Local): " + formateDateToLocal(planVec[0].launchDate) + " | Land Time (Local): " + formateDateToLocal(planVec[0].landingDate);
 				
 				saveBtn.enabled = true;
-				saveCSV_btn.enabled = true;
 			}
 			
 			private function sortByLaunchTime(a:Attack, b:Attack):Number
@@ -333,7 +331,7 @@
 					for(var i:uint = 0; i < nF; i++) {
 						var attVCoorIndex:Number = Math.floor(Math.random()*attV_coor.length);
 						var fakeLandingTime1:Date = new Date(landingTime);
-						var fakeTravelTime_inSeconds1:Number = Attack.calculateTravelTime(attV_coor[attVCoorIndex], tarV_coor[j], String(fakeTypeSelect.selectedItem), Number(worldSpeedTxt.text));
+						var fakeTravelTime_inSeconds1:Number = Attack.calculateTravelTime(attV_coor[attVCoorIndex], tarV_coor[j], String(fakeTypeSelect.selectedItem), 1);
 						var fakeStartTime1:Date = Attack.calculateLaunchTime(fakeTravelTime_inSeconds1, fakeLandingTime1);
 						var fakeAttack1:Attack = new Attack(attV_coor[attVCoorIndex], attV_name[attVCoorIndex], attV_id[attVCoorIndex], tarV_coor[j], tarV_name[j], tarV_id[j], landingTime, fakeStartTime1, String(fakeTypeSelect.selectedItem));
 						planVec.push(fakeAttack1);
@@ -441,7 +439,6 @@
 						break;
 					case undefined:
 						currentState = "Layout1";
-						layoutsBtn.selectedIndex = 0;
 						break;
 				}
 			}
@@ -454,105 +451,65 @@
 	</fx:Declarations>
 	
 	
-	<s:states>
-		<s:State name="Layout1"/>
-		<s:State name="Layout2"/>
-	</s:states>
-	
-	<s:layout.Layout1>
-		<s:VerticalLayout paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" horizontalAlign="center"/>
-	</s:layout.Layout1>
-	<s:layout.Layout2>
-		<s:HorizontalLayout paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10"/>
-	</s:layout.Layout2>
-	
-	<s:Group width="100%" height="20%"
-			 height.Layout2="100%"
-			 minWidth.Layout2="250"
-			 width.Layout2="35%">
-		<s:layout.Layout1>
-			<s:HorizontalLayout/>
-		</s:layout.Layout1>
-		<s:layout.Layout2>
-			<s:VerticalLayout/>
-		</s:layout.Layout2>
-		
-		<s:VGroup height="100%" width="50%"
-				  width.Layout2="100%">
-			<s:Label id="lbl1" fontSize="12" fontWeight="bold" text="Attacking villages (1)"/>
-			<s:TextArea id="attVilsTxt" width="100%" height="100%"
-						change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]"
-						/>
-		</s:VGroup>
-		<s:VGroup width="50%" height="100%"
-				  width.Layout2="100%">
-			<s:Label fontSize="12" fontWeight="bold" text="Target villages (1)"/>
-			<s:TextArea id="targetsTxt" width="100%" height="100%"
-						change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]"/>
-		</s:VGroup>
-	</s:Group>
-	
-	<s:Group width="100%" height="100%">
-		<s:layout>
-			<s:VerticalLayout horizontalAlign="center"/>
-		</s:layout>
-		<s:Spacer includeIn="Layout2" height="10"/>
-		<s:VGroup horizontalAlign="center">
-			<s:HGroup verticalAlign="middle">
-				<s:Button id="parseInputsBtn" label="Parse Inputs (2)" click="parseInputsBtn_clickHandler(event)"/>
-				<s:Button id="clearMatchupsBtn" label="Clear Plan Nodes" click="clearMatchupsBtn_clickHandler(event)"/>
-				<s:ButtonBar id="layoutsBtn" change="layoutsBtn_changeHandler(event)"
-							 selectedIndex.Layout1="0"
-							 selectedIndex.Layout2="1">  
-					<mx:ArrayCollection>
-						<fx:String>Layout 1</fx:String> 
-						<fx:String>Layout 2</fx:String> 
-					</mx:ArrayCollection>
-				</s:ButtonBar>
-			</s:HGroup>
-			<s:HGroup textAlign="center" verticalAlign="middle">
-				<s:Label text="(3)"/>
-				<mx:DateField id="attDate" change="enablePlanMakers(event)" formatString="DD/MM/YY"/>
-				<s:NumericStepper id="attHour" change="enablePlanMakers(event)" maximum="23" minimum="0"
-								  stepSize="1"/>
-				<s:Label text=":"/>
-				<s:NumericStepper id="attMin" change="enablePlanMakers(event)" maximum="59" minimum="0"
-								  stepSize="1"/>
-				<s:Label text=":"/>
-				<s:NumericStepper id="attSec" change="enablePlanMakers(event)" maximum="59" minimum="0"
-								  stepSize="0"/>
-				<s:Label text="World Speed"/>
-				<s:TextInput id="worldSpeedTxt" width="30" prompt="1" text="1" textAlign="center"/>
-			</s:HGroup>
-			<s:Label fontWeight="bold"
-					 text="UTC DD/MM/YY (24-hour) - Plan automatically copied to clipboard"/>
-			<s:HGroup verticalAlign="baseline">
-				<s:Button id="makePlanBtn" label="Make Plan (4)" click="makePlanBtn_clickHandler(event)"
-						  enabled="false"/>
-				<s:Spacer width="10" height="10"/>
-				<s:Button id="massFakerBtn" label="Mass Faker (4)" click="massFakerBtn_clickHandler(event)"
-						  enabled="false"/>
-				<s:Label text="Fake type:"/>
-				<s:DropDownList id="fakeTypeSelect" width="91" prompt="Fake type" selectedIndex="0" dataProvider="{fakeTypes}">
-				</s:DropDownList>
-				<s:TextInput id="numFakesTxt" width="120" prompt="# of fakes/village (4)"/>
-				
-			</s:HGroup>
-			<s:HGroup>
-				<s:Button id="condenseBtn" label="Condense (5)" click="condenseBtn_clickHandler(event)"
-						  enabled="false"/>
-				<s:Button id="saveBtn" label="Save as JSON (5)" click="saveBtn_clickHandler(event)" enabled="false"/>
-				<s:Button id="saveCSV_btn" label="Save as CSV (5)"
-						  click="saveCSV_btn_clickHandler(event)" enabled="false"/>
-			</s:HGroup>
-		</s:VGroup>
-		<s:VGroup width="100%">
-			<s:Label id="statusTxt" width="100%" textAlign="center" verticalAlign="middle"/>
-			<s:Label id="statusTxt2" width="100%" textAlign="center" verticalAlign="middle"/>
-		</s:VGroup>
-		<s:Scroller id="scroller" horizontalScrollPolicy="auto" height="100%" width="100%">
-			<s:VGroup id="attCompGroup" width="100%" height="100%" horizontalAlign="center" textAlign="center" verticalAlign="top">
+	<s:layout>
+		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5"
+						  paddingRight="5" paddingTop="5" gap="5"/>
+	</s:layout>
+	<mx:VDividedBox width="100%" height="100%">
+		<mx:HDividedBox width="100%">
+			<s:VGroup height="100%" width="100%">
+				<s:Label fontSize="12" fontWeight="bold" text="Attacking villages"/>
+				<s:TextArea id="attVilsTxt" width="100%" height="100%"
+							change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]\{id\}"/>
 			</s:VGroup>
-		</s:Scroller>
-	</s:Group>
+			<s:VGroup height="100%" width="100%">
+				<s:Label fontSize="12" fontWeight="bold" text="Target villages"/>
+				<s:TextArea id="targetsTxt" width="100%" height="100%"
+							change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]\{id\}"/>
+			</s:VGroup>
+		</mx:HDividedBox>
+		<s:VGroup width="100%" height="100%">
+			<s:HGroup width="100%" horizontalAlign="center">
+				<s:VGroup verticalAlign="middle" horizontalAlign="center">
+					<s:HGroup width="100%">
+						<s:Button id="parseInputsBtn" width="100%" label="Parse Inputs" click="parseInputsBtn_clickHandler(event)"/>
+						<s:Button id="clearMatchupsBtn" width="100%" label="Clear Plan Nodes" click="clearMatchupsBtn_clickHandler(event)"/>
+						<s:Button id="condenseBtn" label="Condense" click="condenseBtn_clickHandler(event)"/>
+					</s:HGroup>
+					<s:HGroup width="100%" textAlign="center" verticalAlign="middle">
+						<s:Label fontWeight="bold" text="UTC"/>
+						<mx:DateField id="attDate" change="enablePlanMakers(event)" formatString="DD/MM/YY"/>
+						<s:NumericStepper id="attHour" change="enablePlanMakers(event)" maximum="23" minimum="0"
+										  stepSize="1"/>
+						<s:Label text=":"/>
+						<s:NumericStepper id="attMin" change="enablePlanMakers(event)" maximum="59" minimum="0"
+										  stepSize="1"/>
+						<s:Label text=":"/>
+						<s:NumericStepper id="attSec" change="enablePlanMakers(event)" maximum="59" minimum="0"
+										  stepSize="0"/>
+					</s:HGroup>
+					<s:HGroup>
+						<s:DropDownList id="fakeTypeSelect" width="100%" prompt="Fake type" selectedIndex="0" dataProvider="{fakeTypes}">
+						</s:DropDownList>
+						<s:TextInput id="numFakesTxt" width="100%" prompt="fakes/village"/>
+					</s:HGroup>
+				</s:VGroup>
+				<s:VGroup width="108" horizontalAlign="center">
+					<s:Button id="saveBtn" width="100%" label="Save as JSON" click="saveBtn_clickHandler(event)" enabled="false"/>
+					<s:Button id="makePlanBtn" label="Make Plan" click="makePlanBtn_clickHandler(event)"
+							  enabled="false" width="100%"/>
+					<s:Button id="massFakerBtn" width="100%" label="Mass Faker" click="massFakerBtn_clickHandler(event)"
+							  enabled="false"/>
+				</s:VGroup>
+			</s:HGroup>
+			<s:VGroup>
+				<s:Label id="statusTxt" width="100%" textAlign="center" verticalAlign="middle"/>
+				<s:Label id="statusTxt2" width="100%" textAlign="center" verticalAlign="middle"/>
+				<s:Scroller id="scroller" horizontalScrollPolicy="auto" height="100%" width="100%" verticalScrollPolicy="auto">
+					<s:VGroup id="attCompGroup" width="100%" height="100%" horizontalAlign="center">
+					</s:VGroup>
+				</s:Scroller>
+			</s:VGroup>
+		</s:VGroup>
+	</mx:VDividedBox>
 </s:Application>
