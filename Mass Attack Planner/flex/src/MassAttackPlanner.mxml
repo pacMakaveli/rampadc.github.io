@@ -6,7 +6,8 @@
 			   creationComplete="init(event)">
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingLeft="5"
-						  paddingRight="5" paddingTop="5" gap="5"
+						  paddingRight="5" paddingTop="5"
+						  paddingBottom="5" gap="5"
 						  verticalAlign="top"/>
 	</s:layout>
 	<mx:VDividedBox width="100%">
