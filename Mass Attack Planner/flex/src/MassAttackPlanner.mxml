@@ -80,7 +80,7 @@
 			import spark.events.IndexChangeEvent;
 			import spark.events.TextOperationEvent;
 			
-			private var villageRegex:RegExp = new RegExp(/\((.+)\)\[([0-9]+)\|([0-9]+)\]/gm);
+			private var villageRegex:RegExp = new RegExp(/\((.+)\)\[([0-9]+)\|([0-9]+)\]\{(.+)\}/gm);
 			
 			private var attV_name:Vector.<String>;
 			private var attV_coor:Vector.<Point>;
