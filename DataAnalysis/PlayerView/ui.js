@@ -27,7 +27,7 @@ function startGUI() {
                 view: "datatable",
                 id: "playerStatTbl",
                 columns: [
-                    {id: "name", header: "Name"},
+                    {id: "name", header: "Name", fillspace:true},
                     {id: "id", header: "Id"},
                     {id: "points", header: "Points"},
                     {id: "rank", header: "Rank"},
@@ -37,7 +37,6 @@ function startGUI() {
                     {id: "cav", header: "Cavalry"},
                     {id: "siege", header: "Siege"}
                 ],
-                autowidth: true,
                 height: 100
             },
             {view: "resizer"},
@@ -45,13 +44,12 @@ function startGUI() {
                 view: "datatable",
                 id: "playerVillagesTbl",
                 columns: [
-                    {id: "village_name", header: "Name"},
+                    {id: "village_name", header: "Name", fillspace:true},
                     {id: "village_id", header: "Id"},
                     {id: "points", header: "Points"},
                     {id: "village_x", header: "X"},
                     {id: "village_y", header: "Y"}
                 ],
-                autowidth: true
             },
             {
                 view: "button",
