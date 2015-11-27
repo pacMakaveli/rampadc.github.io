@@ -49,7 +49,7 @@ function startGUI() {
                     {id: "points", header: "Points"},
                     {id: "village_x", header: "X"},
                     {id: "village_y", header: "Y"}
-                ],
+                ]
             },
             {
                 view: "button",
