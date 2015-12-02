@@ -5,7 +5,7 @@
 var players;
 
 localStorage.dbReady = 0;
-$.getJSON("./db/Combined_PA.json", function(json) {
+$.getJSON("./db/en15/Combined_PA.json", function(json) {
     players = json;
     playersList = [];
 
