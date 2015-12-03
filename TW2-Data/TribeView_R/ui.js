@@ -129,11 +129,22 @@ function ui_displayTribeInfo(tribe) {
     $$('tribeStatTbl').add(tribe);
 }
 
+function ui_clearTribeInfo() {
+    $$('tribeStatTbl').clearAll();
+}
+
 function ui_displayPlayersInfo(players) {
     $$('playersTbl').clearAll();
-    for(var i = 0; i < players.length; i++) {
-        $$('playersTbl').add(players[i]);
+
+    if(Array.isArray(players)) {
+        for(var i = 0; i < players.length; i++) {
+            $$('playersTbl').add(players[i]);
+        }
+    } else {
+        console.log(players);
+        $$('playersTbl').add(players);
     }
+
     $$('playersTbl').sort(playersTbl_sort.property, playersTbl_sort.direction, playersTbl_sort.dataType)
 }
 

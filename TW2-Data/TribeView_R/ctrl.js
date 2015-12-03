@@ -19,6 +19,14 @@ function ctrl_handleSearchBox() {
     if(tribe == null) {
         searchTerm = getTribeNameFromPlayer(searchTerm);
         tribe = getTribeInfo(searchTerm);
+
+        if(tribe == null) {
+            // Player does not belong in tribe
+            var player = search($$('searchBox').getValue());
+            ui_clearTribeInfo();
+            ui_displayPlayersInfo(player);
+            return;
+        }
     }
 
     var players = getAllPlayersInTribe(searchTerm);
