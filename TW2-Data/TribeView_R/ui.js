@@ -1,7 +1,6 @@
-/**
- * Created by CONG on 03-Dec-15.
- */
 
+var dv1;
+var dv2;
 var playersTbl_sort = {property: "name", direction: "asc", dataType: "string"};
 
 function startPreloader() {
@@ -71,7 +70,7 @@ function startGUI(p, t, t10) {
                     {id: "cav", header: "Cavalry", sort: "int"},
                     {id: "siege", header: "Siege", sort: "int"}
                 ],
-                onContext: {}
+                select: "row"
             }
         ]
     };
@@ -88,18 +87,30 @@ function startGUI(p, t, t10) {
     // Context menu
     webix.ui({
         view: "contextmenu",
+        id: "playersTbl_cm",
         data: [
             "Export villages"
-        ]
-    });
+        ],
+        on: {
+            onItemClick: function(id, context) {
+                row = this.getContext().id;
+                dtItem = $$("playersTbl").getItem(row);
+                exportVillages(dtItem);
+            }
+        }
+    }).attachTo($$("playersTbl"));
 }
 
 function attachEvents() {
     $$('searchBox').attachEvent("onSearchIconClick", onSearchIconClick);
     $$('searchBox').attachEvent("onKeyPress", onSearchKeyPress);
     $$('playersTbl').attachEvent("onAfterSort", onPlayersTblSort);
+    $$('playersTbl').attachEvent("onItemDblClick", onPlayersTblDblClick);
 }
 
+function onPlayersTblDblClick(id, e, node) {
+    console.log(id);
+}
 function onPlayersTblSort(property, direction, dataType) {
     playersTbl_sort = {property: property, direction: direction, dataType: dataType};
 }
@@ -124,4 +135,31 @@ function ui_displayPlayersInfo(players) {
         $$('playersTbl').add(players[i]);
     }
     $$('playersTbl').sort(playersTbl_sort.property, playersTbl_sort.direction, playersTbl_sort.dataType)
+}
+
+function exportVillages(results) {
+    var str = "";
+    for(var i = 0; i < results.villages.length; i++) {
+        str += "(" + results.villages[i].village_name + ")";
+        str += "[" + results.villages[i].village_x + "|" + results.villages[i].village_y + "]";
+        str += "{" + results.villages[i].village_id + "}";
+        str += "\r\n";
+    }
+    download(results.name + "_villages.txt", str);
+}
+
+// HELPER FUNCTION
+function download(filename, text) {
+    var pom = document.createElement('a');
+    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    pom.setAttribute('download', filename);
+
+    if (document.createEvent) {
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        pom.dispatchEvent(event);
+    }
+    else {
+        pom.click();
+    }
 }
