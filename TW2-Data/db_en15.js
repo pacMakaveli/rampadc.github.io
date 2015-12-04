@@ -6,6 +6,7 @@ var players;
 var tribes;
 
 var _dbReady = 0;
+var lastUpdatedTime;
 localStorage.dbReady = 0;
 
 $.getJSON("./db/en15/Combined_PA.json", function(json) {
@@ -15,7 +16,7 @@ $.getJSON("./db/en15/Combined_PA.json", function(json) {
             playersList.push({id: i, value: p.players[i].name});
         }
     }
-
+    lastUpdatedTime = new Date(p.time);
     console.log('Preparing players snapshot');
     players = Defiant.getSnapshot(p);
     console.log('Completed preparing players\' snapshot');
@@ -71,6 +72,10 @@ var getCharacterByName2 = "']";
 function search(charName) {
     var player = JSON.search(players, getCharacterByName1 + charName + getCharacterByName2);
     return player[0];
+}
+
+function getDBLastUpdatedTime() {
+    return lastUpdatedTime.toString();
 }
 
 function getVillages(x, y, dx, dy) {

@@ -6,7 +6,7 @@ var dbReady = setInterval(function() {
         console.log('Ready');
         clearInterval(dbReady);
 
-        startGUI(playersList, tribesList, tribes_top10);
+        startGUI(playersList, tribesList, tribes_top10, getDBLastUpdatedTime());
         attachEvents();
     }
 }, 100);

@@ -6,7 +6,7 @@ var playersTbl_sort = {property: "name", direction: "asc", dataType: "string"};
 function startPreloader() {
     webix.message("Preparing databases...");
 }
-function startGUI(p, t, t10) {
+function startGUI(p, t, t10, uT) {
     webix.message("Ready");
     var colorSwash = ['#004B67','#6784B3','#2C4E86','#64AB23','#A6CBF0',
         '#DF8500','#68468F','#9FD96B','#53BA83','#4E463C'];
@@ -61,6 +61,7 @@ function startGUI(p, t, t10) {
                 id: 'playersTbl',
                 columns: [
                     {id: "name", header: "Name", fillspace:true, sort:"string"},
+                    {id: "id", header: "Id"},
                     {id: "points", header: "Points", sort:"int"},
                     {id: "away", header: "Away (days)", sort: "int", template:function(obj) {return obj.away.toFixed(2)}},
                     {id: "rank", header: "Rank", sort:"int"},
@@ -75,12 +76,18 @@ function startGUI(p, t, t10) {
         ]
     };
 
+    var lastUpdatedTime = {
+        view: 'label',
+        label: 'Last updated time: ' + uT
+    };
+
     webix.ui({
         type: "space",
         rows: [
             top10TribesUI,
             searchBoxUI,
-            dataViewsUI
+            dataViewsUI,
+            lastUpdatedTime
         ]
     });
 
