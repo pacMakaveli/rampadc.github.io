@@ -2,15 +2,18 @@
 var dv1;
 var dv2;
 var playersTbl_sort = {property: "name", direction: "asc", dataType: "string"};
+var searchSuggestionsLists;
+
+var searchBy = "tribe";
 
 function startPreloader() {
     webix.message("Preparing databases...");
 }
-function startGUI(p, t, t10, uT) {
+function startGUI(lists, t10, uT) {
     webix.message("Ready");
     var colorSwash = ['#004B67','#6784B3','#2C4E86','#64AB23','#A6CBF0',
         '#DF8500','#68468F','#9FD96B','#53BA83','#4E463C'];
-    var searchBoxSuggestions = p.concat(t);
+    searchSuggestionsLists = lists;
     var top10TribesUI = {
         view: "accordion",
         multi: true,
@@ -18,29 +21,44 @@ function startGUI(p, t, t10, uT) {
             {
                 header: "Top 10 Tribes Overview",
                 body: {
-                    cols: [
-                        {
-                            view: "chart",
-                            type: "pie",
-                            label: "#tag#",
-                            value: "#villages#",
-                            tooltip: {template: "#name# (#tag#): #dominationRatio#% (#villages#)"},
-                            color: function(obj) {
-                                return colorSwash[obj.rank-1];
-                            },
-                            data: t10
-                        }
-                    ]
+                    view: "chart",
+                    type: "pie",
+                    value: "#villages#",
+                    tooltip: {template: "#name# (#tag#): #dominationRatio#% (#villages# villages)"},
+                    color: function (obj) {
+                        return colorSwash[obj.rank - 1];
+                    },
+                    legend: {
+                        width: 350,
+                        valign: "middle",
+                        template: "#name#, (#tag#): #dominationRatio#%"
+                    },
+                    data: t10
                 }
             }
         ]
     };
 
-    var searchBoxUI = {
-        view: "search",
-        id: "searchBox",
-        placeholder: "Search for Tribe by tribe name or player name",
-        suggest: searchBoxSuggestions
+    var searchUI = {
+        cols: [
+            {
+                view: "radio",
+                id: "searchOption",
+                value: 1,
+                options: [
+                    {id: 1, value: "Tribe"},
+                    {id: 2, value: "Player"},
+                    {id: 3, value: "Province"}
+                ],
+                width: 300
+            },
+            {
+                view: "search",
+                id: "searchBox",
+                placeholder: "Enter a name",
+                suggest: searchSuggestionsLists.tribesList
+            }
+        ]
     };
 
     var dataViewsUI = {
@@ -60,9 +78,9 @@ function startGUI(p, t, t10, uT) {
                 view: 'datatable',
                 id: 'playersTbl',
                 columns: [
-                    {id: "name", header: "Name", fillspace:true, sort:"string"},
+                    {id: "name", header: ["Name", {id: "playerNameFilter", content: "textFilter"}], fillspace:true, sort:"string"},
                     {id: "id", header: "Id"},
-                    {id: "points", header: "Points", sort:"int"},
+                    {id: "points", header: ["Points", {content: "numberFilter", placeholder: ">=10000"}], sort:"int"},
                     {id: "away", header: "Away (days)", sort: "int", template:function(obj) {return obj.away.toFixed(2)}},
                     {id: "rank", header: "Rank", sort:"int"},
                     {id: "offBash", header: "OBP", sort: "int"},
@@ -85,13 +103,13 @@ function startGUI(p, t, t10, uT) {
         type: "space",
         rows: [
             top10TribesUI,
-            searchBoxUI,
+            searchUI,
             dataViewsUI,
             lastUpdatedTime
         ]
     });
 
-    // Context menu
+// Context menu
     webix.ui({
         view: "contextmenu",
         id: "playersTbl_cm",
@@ -113,6 +131,21 @@ function attachEvents() {
     $$('searchBox').attachEvent("onKeyPress", onSearchKeyPress);
     $$('playersTbl').attachEvent("onAfterSort", onPlayersTblSort);
     $$('playersTbl').attachEvent("onItemDblClick", onPlayersTblDblClick);
+    $$('searchOption').attachEvent("onChange", onSearchOptionChanged);
+}
+
+function onSearchOptionChanged(val) {
+    if(val == 1) {
+        searchBy = "tribe";
+        $$('searchBox').define("suggest", searchSuggestionsLists.tribesList);
+    } else if(val == 2) {
+        searchBy = "player";
+        $$('searchBox').define("suggest", searchSuggestionsLists.playersList);
+    } else if(val == 3) {
+        searchBy = "province";
+        $$('searchBox').define("suggest", searchSuggestionsLists.provincesList);
+    }
+    $$('searchBox').refresh();
 }
 
 function onPlayersTblDblClick(id, e, node) {
@@ -122,12 +155,12 @@ function onPlayersTblSort(property, direction, dataType) {
     playersTbl_sort = {property: property, direction: direction, dataType: dataType};
 }
 function onSearchIconClick(event) {
-    ctrl_handleSearchBox()
+    ctrl_handleSearchBox(searchBy)
 }
 
 function onSearchKeyPress(event) {
     if(event == 13) {
-        ctrl_handleSearchBox();
+        ctrl_handleSearchBox(searchBy);
     }
 }
 

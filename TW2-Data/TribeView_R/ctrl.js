@@ -1,36 +1,44 @@
 startPreloader();
 
 var dbReady = setInterval(function() {
-    if(parseInt(localStorage.dbReady) == 1) {
-        localStorage.dbReady = 0;
+    if(db_isReady()) {
         console.log('Ready');
         clearInterval(dbReady);
 
-        startGUI(playersList, tribesList, tribes_top10, getDBLastUpdatedTime());
+        startGUI(db_getSuggestionLists(), db_getTop10Tribes(), getDBLastUpdatedTime());
         attachEvents();
     }
 }, 100);
 
-function ctrl_handleSearchBox() {
+function ctrl_handleSearchBox(s) {
     var searchTerm = $$('searchBox').getValue();
     searchTerm = searchTerm.trim();
 
-    var tribe = getTribeInfo(searchTerm);
-    if(tribe == null) {
+    var tribe, players;
+
+    if(s == "tribe") {
+        tribe = getTribeInfo(searchTerm);
+        ui_displayTribeInfo(tribe);
+
+        players = getAllPlayersInTribe(searchTerm);
+    } else if(s == "player") {
         searchTerm = getTribeNameFromPlayer(searchTerm);
         tribe = getTribeInfo(searchTerm);
 
         if(tribe == null) {
             // Player does not belong in tribe
-            var player = search($$('searchBox').getValue());
+            players = search($$('searchBox').getValue());
             ui_clearTribeInfo();
-            ui_displayPlayersInfo(player);
-            return;
+        } else {
+            players = getAllPlayersInTribe(searchTerm);
+            ui_displayTribeInfo(tribe);
         }
+
+    } else if(s == "province") {
+        ui_clearTribeInfo();
+        players = getPlayersFromProvince(searchTerm);
+    } else {
     }
 
-    var players = getAllPlayersInTribe(searchTerm);
-
-    ui_displayTribeInfo(tribe);
     ui_displayPlayersInfo(players);
 }

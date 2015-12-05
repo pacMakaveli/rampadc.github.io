@@ -2,30 +2,38 @@
  * Created by CONG on 25-Nov-15.
  */
 
-var players;
-var tribes;
+var playersList = [];
+var tribesList = [];
+var provincesList = [];
 
 var _dbReady = 0;
 var lastUpdatedTime;
 localStorage.dbReady = 0;
 
+Array.prototype.unique = function() {
+    for (var e = [], o = 0; o < this.length; o++)
+        -1 == e.indexOf(this[o]) && e.push(this[o]);
+    return e
+}
+;
+
 $.getJSON("./db/en15/Combined_PA.json", function(json) {
-    var p = json;
-    if(playersList != null) {
-        for(var i = 0; i < p.players.length; i++){
-            playersList.push({id: i, value: p.players[i].name});
-        }
-    }
-    lastUpdatedTime = new Date(p.time);
     console.log('Preparing players snapshot');
-    players = Defiant.getSnapshot(p);
+    players = Defiant.getSnapshot(json);
     console.log('Completed preparing players\' snapshot');
+
+    var pNames = JSON.search(players, "//players/name");
+    for(var i = 0; i < pNames.length; i++){
+        playersList.push({id: i, value: pNames[i]});
+    }
+    lastUpdatedTime = new Date(json.time);
 
     checkDB_ready();
 });
 
 $.getJSON("./db/en15/Tribes.json", function(json) {
     var t = json;
+
     if(tribesList != null) {
         var tLIdx = 0;
         for(var i = 0; i < t.tribes.length; i += 1) {
@@ -52,16 +60,35 @@ $.getJSON("./db/en15/Tribes.json", function(json) {
     checkDB_ready();
 });
 
+$.getJSON("./db/en15/Villages.json", function(json) {
+    console.log('Preparing villages snapshot');
+    villages = Defiant.getSnapshot(json);
+    console.log('Completed preparing villages snapshot');
+
+    var ps = JSON.search(villages, "//villages/province_name");
+    ps = ps.unique();
+    for(var i = 0; i < ps.length; i++){
+        provincesList.push({id: i, value: ps[i]});
+    }
+
+    checkDB_ready();
+});
+
 function checkDB_ready() {
     _dbReady += 1;
-    console.log(_dbReady);
-    if(_dbReady >= 2) {
-        localStorage.dbReady = 1;
-    } else {
-        localStorage.dbReady = 0;
-    }
 }
 
+function db_isReady() {
+    return _dbReady >= 3;
+}
+
+function db_getSuggestionLists() {
+    return {
+        provincesList: provincesList,
+        playersList: playersList,
+        tribesList: tribesList
+    }
+}
 ///////////////////////////////////////////////////////////////////////////////////
 // SEARCH FUNCTION
 ///////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +120,7 @@ function getVillages(x, y, dx, dy) {
         ')]');
 }
 
-function getTop10Tribes() {
+function db_getTop10Tribes() {
     return tribes_top10;
 }
 
@@ -113,4 +140,66 @@ function getTribeNameFromPlayer(playerName) {
 
 function getAllPlayersFromTribeWithPlayer(playerName) {
     return getAllPlayersInTribe(getTribeNameFromPlayer(playerName));
+}
+
+function getPlayerInfoFromCoor(x, y) {
+    var pName = JSON.search(players, '//players/villages[village_x=' +
+        String(x) +
+        ' and village_y=' +
+        String(y) +
+        ']');
+    pName = pName[0].charName;
+
+    var pData = JSON.search(players, '//players[name=\''+pName+'\']');
+
+    return pData[0];
+}
+
+function getVillageInfo(x, y) {
+    var village = JSON.search(players, '//players/villages[village_x=' +
+        String(x) +
+        ' and village_y=' +
+        String(y) +
+        ']');
+    return village[0];
+}
+
+function getPlayersFromProvince(province) {
+    var v = JSON.search(villages, "//villages[province_name='" + province + "']");
+    var pNames = [];
+    for(var i = 0; i < v.length; i++) {
+        if(v[i].character_name != null) {
+            pNames.push(v[i].character_name);
+        }
+    }
+
+    pNames = pNames.unique();
+
+    var pProfiles = [];
+    for (i = 0; i < pNames.length; i++) {
+        var jSearch = JSON.search(players, "//players[name='" + pNames[i] + "']");
+        pProfiles.push(jSearch[0]);
+    }
+
+    return pProfiles;
+}
+
+function getPlayersByArea(x, y, w, h) {
+    var v = getVillages(x, y, w, h);
+    var pNames = [];
+    for(var i = 0; i < v.length; i++) {
+        pNames.push(v[i].charName);
+    }
+    pNames = pNames.unique();
+
+    var pProfiles = [];
+    for (i = 0; i < pNames.length; i++) {
+        var jSearch = JSON.search(players, "//players[name='" + pNames[i] + "']");
+        pProfiles.push(jSearch[0]);
+    }
+
+    ui_clearTribeInfo();
+    ui_displayPlayersInfo(pProfiles);
+
+    return pProfiles;
 }
