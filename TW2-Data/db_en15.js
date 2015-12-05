@@ -98,12 +98,12 @@ function getTop10Tribes() {
 }
 
 function getTribeInfo(tribeName) {
-    var a = JSON.search(tribes, "//tribes[name='" +tribeName+ "']" );
+    var a = JSON.search(tribes, "//tribes[name=\"" +tribeName+ "\"]" );
     return a[0];
 }
 
 function getAllPlayersInTribe(tribeName) {
-    return JSON.search(players, "//players[tribeName='"+tribeName+"']");
+    return JSON.search(players, "//players[tribeName=\""+tribeName+"\"]");
 }
 
 function getTribeNameFromPlayer(playerName) {
