@@ -15,14 +15,12 @@
 			<s:VGroup height="100%" width="100%">
 				<s:Label fontSize="12" fontWeight="bold" text="Attacking villages"/>
 				<s:TextArea id="attVilsTxt" width="100%" height="100%"
-							change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]"
-							text="(SMAGLAISYAL)[504|492]\{109\}"/>
+							change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]"/>
 			</s:VGroup>
 			<s:VGroup height="100%" width="100%">
 				<s:Label fontSize="12" fontWeight="bold" text="Target villages"/>
 				<s:TextArea id="targetsTxt" width="100%" height="100%"
-							change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]"
-							text="(VG.fy)[510|504]\{4883\}"/>
+							change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]"/>
 			</s:VGroup>
 		</mx:HDividedBox>
 		<s:VGroup width="100%">
