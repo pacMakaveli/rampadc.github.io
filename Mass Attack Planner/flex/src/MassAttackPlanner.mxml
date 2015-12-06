@@ -10,6 +10,7 @@
 						  paddingBottom="5" gap="5"
 						  verticalAlign="top"/>
 	</s:layout>
+	
 	<mx:VDividedBox width="100%">
 		<mx:HDividedBox width="100%">
 			<s:VGroup height="100%" width="100%">
@@ -407,7 +408,7 @@
 						var fakeLandingTime1:Date = new Date(landingTime);
 						var fakeTravelTime_inSeconds1:Number = Attack.calculateTravelTime(attV_coor[attVCoorIndex], tarV_coor[j], String(fakeTypeSelect.selectedItem), 1);
 						var fakeStartTime1:Date = Attack.calculateLaunchTime(fakeTravelTime_inSeconds1, fakeLandingTime1);
-						var fakeAttack1:Attack = new Attack(attV_coor[attVCoorIndex], attV_name[attVCoorIndex], attV_id[attVCoorIndex], tarV_coor[j], tarV_name[j], tarV_id[j], landingTime, fakeStartTime1, String(fakeTypeSelect.selectedItem));
+						var fakeAttack1:Attack = new Attack(attV_coor[attVCoorIndex], attV_name[attVCoorIndex], attV_id[attVCoorIndex], tarV_coor[j], tarV_name[j], tarV_id[j], landingTime, fakeStartTime1, false, String(fakeTypeSelect.selectedItem));
 						planVec.push(fakeAttack1);
 					}
 				}
