@@ -38,10 +38,11 @@
 			private var _targetCoor:Point;
 			private var _targetName:String = "";
 			private var _targetId:Number;
-
+			
 			private var _first:Boolean;
 			
 			private var _worldSpeed:Number;
+			private var _support:Boolean;
 			
 			[Bindable]
 			private var _unitsList:Array;
@@ -49,111 +50,121 @@
 			[Bindable]
 			private var _targetsList:ArrayCollection;
 			
+			public function get support():Boolean {
+				return _support;
+			}
 			public function get worldSpeed():Number
 			{
 				return _worldSpeed;
 			}
-
+			
 			public function set worldSpeed(value:Number):void
 			{
 				_worldSpeed = value;
 			}
-
+			
 			public function get targetId():Number
 			{
 				return _targetId;
 			}
-
+			
 			public function set targetId(value:Number):void
 			{
 				_targetId = value;
 			}
-
+			
 			public function get villageId():Number
 			{
 				return _originId;
 			}
-
+			
 			public function set villageId(value:Number):void
 			{
 				_originId = value;
 			}
-
+			
 			public function get targetName():String
 			{
 				return _targetName;
 			}
-
+			
 			public function set targetsList(value:Array):void
 			{
 				_targetsList = new ArrayCollection(value);
 			}
-
+			
 			public function get villageName():String
 			{
 				return _originName;
 			}
-
+			
 			public function set villageName(value:String):void
 			{
 				_originName = value;
 			}
-
+			
 			public function get first():Boolean
 			{
 				return _first;
 			}
-
+			
 			public function set first(value:Boolean):void
 			{
 				_first = value;
 			}
-
+			
 			public function get target():Point
 			{
 				return _targetCoor;
 			}
-
+			
 			public function set target(value:Point):void
 			{
 				_targetCoor = value;
 			}
-
+			
 			public function get attUnit():String
 			{
 				return _attUnit;
 			}
-
+			
 			public function set attUnit(value:String):void
 			{
 				_attUnit = value;
 			}
-
+			
 			public function get villageCoor():Point
 			{
 				return _originCoor;
 			}
-
+			
 			public function set villageCoor(value:Point):void
 			{
 				_originCoor = value;
 			}
-
+			
 			protected function init(event:FlexEvent):void
 			{
 				_unitsList = new Array(SPEAR, SWORD, AXE, ARCHER, LC, MA, HC, RAM, CAT, SERK, TREB, SNOB, KNIGHT);
-//				_unitsList = new Array(RAM, SNOB);
+				//				_unitsList = new Array(RAM, SNOB);
 			}
 			
 			protected function attUnitType_changeHandler(event:IndexChangeEvent):void
 			{
 				if(attUnitType.selectedItem != SNOB) {
 					prioritzeAttackCB.enabled = true;
-					this.setStyle("borderColor", 0xFF0000);
+					supportCB.enabled = true;
+					if(supportCB.selected) {
+						this.setStyle("borderColor", 0x0000FF);
+					} else {
+						this.setStyle("borderColor", 0xFF0000);
+					}
 				} else {
 					this.setStyle("borderColor", 0x8F01DD);
 					prioritzeAttackCB.enabled = false;
 					prioritzeAttackCB.selected = false;
+					supportCB.enabled = false;
+					supportCB.selected = false;
 				}
 				
 				if(_targetName != "") {
@@ -175,11 +186,23 @@
 				} else {
 					_targetName = "";
 				}
+				
+				if(attUnitType.selectedIndex != -1) {
+					travelTimeLbl.text = Attack.formatTimerPeriod(Attack.calculateTravelTime(_originCoor, _targetCoor, String(attUnitType.selectedItem), worldSpeed));
+				}
 			}
 			
 			protected function prioritizeAttCB_clickHandler(event:MouseEvent):void
 			{
+				supportCB.selected = false;
 				_first = prioritzeAttackCB.selected;
+				this.setStyle("borderColor", 0xFF0000);
+			}
+			
+			protected function supportCB_clickHandler(event:MouseEvent):void {
+				prioritzeAttackCB.selected = false;
+				_support = supportCB.selected;
+				this.setStyle("borderColor", 0x0000FF);
 			}
 			
 			protected function clearBtn_clickHandler(event:MouseEvent):void
@@ -223,6 +246,8 @@
 		</s:DropDownList>
 	</s:HGroup>
 	<s:CheckBox id="prioritzeAttackCB" height="19" label="First" click="prioritizeAttCB_clickHandler(event)"
+				enabled="true"/>
+	<s:CheckBox id="supportCB" height="19" label="Support" click="supportCB_clickHandler(event)"
 				enabled="true"/>
 	<s:Button id="clearBtn" width="60" label="Clear" click="clearBtn_clickHandler(event)"/>
 	<s:Label fontWeight="bold" text="Travel time:"/><s:Label id="travelTimeLbl" width="151"

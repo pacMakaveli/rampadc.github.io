@@ -15,12 +15,14 @@
 			<s:VGroup height="100%" width="100%">
 				<s:Label fontSize="12" fontWeight="bold" text="Attacking villages"/>
 				<s:TextArea id="attVilsTxt" width="100%" height="100%"
-							change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]"/>
+							change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]"
+							text="(SMAGLAISYAL)[504|492]\{109\}"/>
 			</s:VGroup>
 			<s:VGroup height="100%" width="100%">
 				<s:Label fontSize="12" fontWeight="bold" text="Target villages"/>
 				<s:TextArea id="targetsTxt" width="100%" height="100%"
-							change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]"/>
+							change="inputs_changedHandler(event)" prompt="(name)[xxx|yyy]"
+							text="(VG.fy)[510|504]\{4883\}"/>
 			</s:VGroup>
 		</mx:HDividedBox>
 		<s:VGroup width="100%">
@@ -244,22 +246,26 @@
 					
 					if(attComponents[i].target != null) {
 						var attLandingTime:Date = new Date(landingTime);
-						var attType:String = attComponents[i].attUnitType.selectedItem;
-						var wallNuke:Boolean = attComponents[i].prioritzeAttackCB.selected;
+						var unitType:String = attComponents[i].attUnitType.selectedItem;
+						var firstAtt:Boolean = attComponents[i].prioritzeAttackCB.selected;
+						var supportFollowUp:Boolean = attComponents[i].supportCB.selected;
 						
-						if(attType != Units.SNOB) {
-							if(wallNuke) {
+						if(unitType != Units.SNOB) {
+							if(firstAtt) {
 								attLandingTime.seconds = landingTime.seconds - 2;
+							} else if(supportFollowUp) {
+								attLandingTime.seconds = landingTime.seconds + 1;
 							} else {
+								// normal attack
 								attLandingTime.seconds = landingTime.seconds - 1;
 							}
 						} else {
 							noble = true;
 						}
 						
-						var attTravelTime_inSeconds:Number = Attack.calculateDistance(origin, target)*Attack.calculateArmySpeed(attType, 1);
+						var attTravelTime_inSeconds:Number = Attack.calculateDistance(origin, target)*Attack.calculateArmySpeed(unitType, 1);
 						var attStartTime:Date = Attack.calculateLaunchTime(attTravelTime_inSeconds, attLandingTime);
-						var attack:Attack = new Attack(origin, originName, originId, target, targetName, targetId, attLandingTime, attStartTime, attType);
+						var attack:Attack = new Attack(origin, originName, originId, target, targetName, targetId, attLandingTime, attStartTime, supportFollowUp, unitType);
 						planVec.push(attack);
 					}
 				}
@@ -307,10 +313,14 @@
 					if(fake == true) {
 						type = "fake"; 
 					} else {
-						if(planVec[i].attackUnitType != AttComponent.SNOB) {
-							type = "normal";
-						} else if(planVec[i].attackUnitType == AttComponent.SNOB) {
-							type = "noble";
+						if(planVec[i].support) {
+							type = "support";
+						} else {
+							if(planVec[i].attackUnitType != AttComponent.SNOB) {
+								type = "normal";
+							} else if(planVec[i].attackUnitType == AttComponent.SNOB) {
+								type = "noble";
+							}
 						}
 					}
 					
@@ -318,7 +328,12 @@
 					plan += "Target: " + planVec[i].targetName + ' (' + String(planVec[i].target.x) + "|" + String(planVec[i].target.y) + ")\n";
 					plan += "Launch time (UTC): " + formatDateToUTC(planVec[i].launchDate) + '\n';
 					plan += "Launch time (Local): " + formateDateToLocal(planVec[i].launchDate) + '\n';
-					plan += "Attack land time (UTC): " + formatDateToUTC(planVec[i].landingDate) + '\n'; 
+					if(planVec[i].support) {
+						plan += "Support land time (UTC): ";
+					} else {
+						plan += "Attack land time (UTC): ";
+					}
+					plan +=  formatDateToUTC(planVec[i].landingDate) + '\n'; 
 					plan += "Type: " + type + '\n';
 					plan += "Slowest unit: " + planVec[i].attackUnitType + '\n\n';
 				}

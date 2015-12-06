@@ -17,9 +17,12 @@ package
 		private var _originId:Number;
 		private var _targetId:Number;
 		
+		private var _support:Boolean;
+		
 		public function Attack(origin:Point, originName:String, originId:Number, 
 							   target:Point, targetName:String, targetId:Number, 
-							   landingDate:Date, launchDate:Date, attackUnitType:String=null)
+							   landingDate:Date, launchDate:Date, 
+							   support:Boolean, attackUnitType:String=null)
 		{
 			_origin = new Point(origin.x, origin.y);
 			_target = new Point(target.x, target.y);
@@ -31,6 +34,7 @@ package
 			_landingDate = new Date(landingDate);
 			_launchDate = new Date(launchDate);
 			_attackUnitType = attackUnitType;
+			_support = support;
 		}
 		
 		public static function formatTimerPeriod(ts:Number):String {
@@ -160,6 +164,10 @@ package
 		public function get attackUnitType():String
 		{
 			return _attackUnitType;
+		}
+		
+		public function get support():Boolean {
+			return _support;
 		}
 
 		public function set attackUnitType(value:String):void
