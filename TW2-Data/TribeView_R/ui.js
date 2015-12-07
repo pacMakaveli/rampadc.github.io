@@ -33,7 +33,16 @@ function startGUI(lists, t10, uT) {
                         valign: "middle",
                         template: "#name#, (#tag#): #dominationRatio#%"
                     },
-                    data: t10
+                    data: t10,
+                    on: {
+                        onItemClick: function(id, e, node) {
+                            var clickedTribe = this.getItem(id);
+                            $$('searchBox').define("value", clickedTribe.name);
+                            $$('searchBox').refresh();
+
+                            ctrl_handleSearchBox("tribe");
+                        }
+                    }
                 }
             }
         ]
@@ -85,18 +94,61 @@ function startGUI(lists, t10, uT) {
                     {id: "rank", header: "Rank", sort:"int"},
                     {id: "offBash", header: "OBP", sort: "int"},
                     {id: "defBash", header: "DBP", sort: "int"},
-                    {id: "inf", header: "Infantry", sort: "int"},
-                    {id: "cav", header: "Cavalry", sort: "int"},
-                    {id: "siege", header: "Siege", sort: "int"}
+                    {id: "inf", header: ["Inf", {content: "numberFilter", placeholder: ">=10000"}], sort: "int"},
+                    {id: "cav", header: ["Cav", {content: "numberFilter", placeholder: ">=500"}], sort: "int"},
+                    {id: "siege", header: ["Siege", {content: "numberFilter", placeholder: ">=100"}], sort: "int"}
                 ],
                 select: "row"
             }
         ]
     };
 
-    var lastUpdatedTime = {
-        view: 'label',
-        label: 'Last updated time: ' + uT
+    var footer = {
+        cols: [
+            {
+                view: 'label',
+                label: 'Last local updated time: ' + uT,
+                width: 500
+            }, {
+                view: 'button',
+                id: 'exportPlayersNamesBtn',
+                label: 'Get displayed player\'s names',
+                on: {
+                    onItemClick: function() {
+                        var bbNames = "";
+                        $$('playersTbl').eachRow(function(row) {
+                            var rowData = $$('playersTbl').getItem(row);
+                            bbNames += ui_getBB('player', rowData.name, rowData.id);
+                            bbNames += '\n';
+                        });
+                        download("displayedPlayers.txt", bbNames);
+                    }
+                }
+            }, {
+                view: 'button',
+                id: 'exportAllPlayersVillagesBtn',
+                label: 'Get displayed player\'s villages',
+                on: {
+                    onItemClick: function() {
+                        var combined = "";
+                        $$('playersTbl').eachRow(function(row) {
+                            var rowData = $$('playersTbl').getItem(row);
+                            var playerBB = ui_getBB('player', rowData.name, rowData.id);
+
+                            combined += playerBB + '\n';
+                            for(var i = 0; i < rowData.villages.length; i++) {
+                                var rowVillages = ui_getBB('village', rowData.villages[i].village_name, rowData.villages[i].village_id);
+                                combined += "   " + rowVillages + '\n';
+                            }
+                            combined += '\n';
+
+                        });
+                        download("displayedPlayers&Villages.txt", combined);
+                    }
+                }
+            }
+        ]
+
     };
 
     webix.ui({
@@ -105,7 +157,7 @@ function startGUI(lists, t10, uT) {
             top10TribesUI,
             searchUI,
             dataViewsUI,
-            lastUpdatedTime
+            footer
         ]
     });
 
@@ -188,6 +240,17 @@ function ui_displayPlayersInfo(players) {
     $$('playersTbl').sort(playersTbl_sort.property, playersTbl_sort.direction, playersTbl_sort.dataType)
 }
 
+function ui_getBB(type, name, id) {
+    var code = "";
+    if(type == 'village') {
+        code = '<a data-bb-type="village" data-bb-value="' + id + '" data-bb-content="' + name + '" class="img-link icon-20x20-village btn btn-orange padded ng-scope" rich-text-internal-link="true" ng-click="action()">' + name + '<\/a>';
+    } else if(type == 'player') {
+        code = '<a data-bb-type="player" data-bb-value="' + id + '" data-bb-content="' + name + '" class="img-link icon-20x20-character btn btn-orange padded ng-scope" rich-text-internal-link="true" ng-click="action()">' + name + "<\/a>";
+    }
+
+    return code;
+
+}
 function exportVillages(results) {
     var str = "";
     for(var i = 0; i < results.villages.length; i++) {

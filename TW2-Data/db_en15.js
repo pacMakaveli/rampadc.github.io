@@ -102,7 +102,7 @@ function search(charName) {
 }
 
 function getDBLastUpdatedTime() {
-    return lastUpdatedTime.toString();
+    return lastUpdatedTime.toLocaleString();
 }
 
 function getVillages(x, y, dx, dy) {
