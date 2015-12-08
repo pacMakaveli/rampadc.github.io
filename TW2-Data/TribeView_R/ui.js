@@ -201,7 +201,9 @@ function onSearchOptionChanged(val) {
 }
 
 function onPlayersTblDblClick(id, e, node) {
-    console.log(id);
+    var row = $$('playersTbl').getItem(id);
+
+    window.open("http://www.tw2-tools.com/en15/player/" + String(row.id));
 }
 function onPlayersTblSort(property, direction, dataType) {
     playersTbl_sort = {property: property, direction: direction, dataType: dataType};
