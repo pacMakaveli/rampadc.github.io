@@ -92,6 +92,7 @@ function startGUI(lists, t10, uT) {
                     {id: "id", header: "Id"},
                     {id: "points", header: ["Points", {content: "numberFilter", placeholder: ">=10000"}], sort:"int"},
                     {id: "away", header: "Away (days)", sort: "int", template:function(obj) {return obj.away.toFixed(2)}},
+                    {id: "beingNobled", header: ["Attacked",{content: "numberFilter", placeholder: "0"}],  sort:"int"},
                     {id: "rank", header: "Rank", sort:"int"},
                     {id: "offBash", header: "OBP", sort: "int"},
                     {id: "defBash", header: "DBP", sort: "int"},
@@ -184,12 +185,6 @@ function startGUI(lists, t10, uT) {
     }).attachTo($$("playersTbl"));
 }
 
-function showAchStats(obj, common) {
-    return
-    ;
-
-
-}
 function attachEvents() {
     $$('searchBox').attachEvent("onSearchIconClick", onSearchIconClick);
     $$('searchBox').attachEvent("onKeyPress", onSearchKeyPress);
