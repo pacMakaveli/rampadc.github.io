@@ -17,7 +17,7 @@ Array.prototype.unique = function() {
 }
 ;
 
-$.getJSON("./db/en15/Combined_PA.json", function(json) {
+$.getJSON("https://bitbucket.org/congia/tw2-en15db/raw/master/db/en15/Combined_PA.json", function(json) {
     console.log('Preparing players snapshot');
     players = Defiant.getSnapshot(json);
     console.log('Completed preparing players\' snapshot');
@@ -31,7 +31,7 @@ $.getJSON("./db/en15/Combined_PA.json", function(json) {
     checkDB_ready();
 });
 
-$.getJSON("./db/en15/Tribes.json", function(json) {
+$.getJSON("https://bitbucket.org/congia/tw2-en15db/raw/master/db/en15/Tribes.json", function(json) {
     var t = json;
 
     if(tribesList != null) {
@@ -60,7 +60,7 @@ $.getJSON("./db/en15/Tribes.json", function(json) {
     checkDB_ready();
 });
 
-$.getJSON("./db/en15/Villages.json", function(json) {
+$.getJSON("https://bitbucket.org/congia/tw2-en15db/raw/master/db/en15/Villages.json", function(json) {
     console.log('Preparing villages snapshot');
     villages = Defiant.getSnapshot(json);
     console.log('Completed preparing villages snapshot');
