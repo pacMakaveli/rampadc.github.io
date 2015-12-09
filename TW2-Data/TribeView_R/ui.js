@@ -67,14 +67,6 @@ function startGUI(lists, t10, uT) {
                 id: "searchBox",
                 placeholder: "Enter a name",
                 suggest: searchSuggestionsLists.tribesList
-            },
-            {
-                view: "checkbox",
-                id: "showMoreAch_cb",
-                label: "Show achievements on hover",
-                labelWidth: 200,
-                width: 220,
-                value: achHoverDispBool
             }
         ]
     };
@@ -108,8 +100,10 @@ function startGUI(lists, t10, uT) {
                     {id: "siege", header: ["Siege", {content: "numberFilter", placeholder: ">=100"}], sort: "int"}
                 ],
                 select: "row",
-                tooltip: function(obj, row) {
-
+                tooltip: {
+                    template:"#name#: LOW #low# | WSW #wsw# | GD #gd# | WOS #wos# | WOR #wor# | H&N #hnn# | WOD #wod# | SG #sg#",
+                    dx: 0,
+                    dy: -40
                 }
             }
         ]
@@ -190,18 +184,18 @@ function startGUI(lists, t10, uT) {
     }).attachTo($$("playersTbl"));
 }
 
+function showAchStats(obj, common) {
+    return
+    ;
+
+
+}
 function attachEvents() {
     $$('searchBox').attachEvent("onSearchIconClick", onSearchIconClick);
     $$('searchBox').attachEvent("onKeyPress", onSearchKeyPress);
     $$('playersTbl').attachEvent("onAfterSort", onPlayersTblSort);
     $$('playersTbl').attachEvent("onItemDblClick", onPlayersTblDblClick);
     $$('searchOption').attachEvent("onChange", onSearchOptionChanged);
-    $$('showMoreAch_cb').attachEvent("onChange", onToggleAchHover);
-}
-
-function onToggleAchHover() {
-    achHoverDispBool = $$('showMoreAch_cb').getValue();
-    console.log(achHoverDispBool);
 }
 
 function onSearchOptionChanged(val) {
