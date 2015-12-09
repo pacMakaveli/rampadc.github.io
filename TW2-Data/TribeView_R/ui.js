@@ -1,11 +1,7 @@
-
-var dv1;
-var dv2;
 var playersTbl_sort = {property: "name", direction: "asc", dataType: "string"};
 var searchSuggestionsLists;
 
 var searchBy = "tribe";
-var achHoverDispBool = true;
 
 function startPreloader() {
     webix.message("Preparing databases...");
@@ -42,6 +38,7 @@ function startGUI(lists, t10, uT) {
                             $$('searchBox').refresh();
 
                             ctrl_handleSearchBox("tribe");
+                            $$('playersTbl').refresh();
                         }
                     }
                 }
@@ -67,6 +64,14 @@ function startGUI(lists, t10, uT) {
                 id: "searchBox",
                 placeholder: "Enter a name",
                 suggest: searchSuggestionsLists.tribesList
+            },
+            {
+                view: "checkbox",
+                id: "jzFeature",
+                label: "Jehzir Feature",
+                labelWidth: 100,
+                width: 120,
+                value: false
             }
         ]
     };
@@ -87,25 +92,35 @@ function startGUI(lists, t10, uT) {
             }, {
                 view: 'datatable',
                 id: 'playersTbl',
+                visibleBatch: 1,
                 columns: [
-                    {id: "name", header: ["Name", {id: "playerNameFilter", content: "textFilter"}], fillspace:true, sort:"string"},
+                    {id: "name", header: ["Name", {id: "playerNameFilter", content: "textFilter"}], fillspace: true, sort:"string"},
                     {id: "id", header: "Id"},
                     {id: "points", header: ["Points", {content: "numberFilter", placeholder: ">=10000"}], sort:"int"},
-                    {id: "away", header: "Away (days)", sort: "int", template:function(obj) {return obj.away.toFixed(2)}},
-                    {id: "beingNobled", header: ["Attacked",{content: "numberFilter", placeholder: "0"}],  sort:"int"},
-                    {id: "rank", header: "Rank", sort:"int"},
-                    {id: "offBash", header: "OBP", sort: "int"},
-                    {id: "defBash", header: "DBP", sort: "int"},
-                    {id: "inf", header: ["Inf", {content: "numberFilter", placeholder: ">=10000"}], sort: "int"},
-                    {id: "cav", header: ["Cav", {content: "numberFilter", placeholder: ">=500"}], sort: "int"},
-                    {id: "siege", header: ["Siege", {content: "numberFilter", placeholder: ">=100"}], sort: "int"}
+                    {id: "away", header: "Away (days)", sort: "int", batch: 1, template:function(obj) {return obj.away.toFixed(2)}},
+                    {id: "beingNobled", header: ["Attacked",{content: "numberFilter", placeholder: "0"}], batch: 1,  sort:"int"},
+                    {id: "rank", header: "Rank", sort:"int", batch: 1},
+                    {id: "offBash", header: "OBP", sort: "int", batch: 1},
+                    {id: "defBash", header: "DBP", sort: "int", batch: 1},
+                    {id: "inf", header: ["Inf", {content: "numberFilter", placeholder: ">=10000"}], sort: "int", batch: 1},
+                    {id: "cav", header: ["Cav", {content: "numberFilter", placeholder: ">=500"}], sort: "int", batch: 1},
+                    {id: "siege", header: ["Siege", {content: "numberFilter", placeholder: ">=100"}], sort: "int", batch: 1},
+
+                    {id: "low", header: ["LOW", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
+                    {id: "gd", header: ["GD", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
+                    {id: "wsw", header: ["WSW", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
+                    {id: "wos", header: ["WOS", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
+                    {id: "wor", header: ["WOR", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
+                    {id: "hnn", header: ["H&N", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
+                    {id: "wod", header: ["WOD", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
+                    {id: "sg", header: ["SG", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2}
                 ],
-                select: "row",
                 tooltip: {
                     template:"#name#: LOW #low# | WSW #wsw# | GD #gd# | WOS #wos# | WOR #wor# | H&N #hnn# | WOD #wod# | SG #sg#",
                     dx: 0,
                     dy: -40
-                }
+                },
+                select: "row"
             }
         ]
     };
@@ -191,6 +206,16 @@ function attachEvents() {
     $$('playersTbl').attachEvent("onAfterSort", onPlayersTblSort);
     $$('playersTbl').attachEvent("onItemDblClick", onPlayersTblDblClick);
     $$('searchOption').attachEvent("onChange", onSearchOptionChanged);
+    $$('jzFeature').attachEvent("onChange", onJZFeatureChanged);
+}
+
+function onJZFeatureChanged() {
+    var jzEnabled = $$('jzFeature').getValue();
+    if(jzEnabled) {
+        $$('playersTbl').showColumnBatch(2);
+    } else {
+        $$('playersTbl').showColumnBatch(1);
+    }
 }
 
 function onSearchOptionChanged(val) {
