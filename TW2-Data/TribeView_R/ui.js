@@ -115,11 +115,11 @@ function startGUI(lists, t10, uT) {
                     {id: "wod", header: ["WOD", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
                     {id: "sg", header: ["SG", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2}
                 ],
-                tooltip: {
-                    template:"#name#: LOW #low# | WSW #wsw# | GD #gd# | WOS #wos# | WOR #wor# | H&N #hnn# | WOD #wod# | SG #sg#",
-                    dx: 0,
-                    dy: -40
-                },
+                //tooltip: {
+                //    template:"#name#: LOW #low# | WSW #wsw# | GD #gd# | WOS #wos# | WOR #wor# | H&N #hnn# | WOD #wod# | SG #sg#",
+                //    dx: 0,
+                //    dy: -40
+                //},
                 select: "row"
             }
         ]
@@ -239,6 +239,9 @@ function onPlayersTblDblClick(id, e, node) {
 }
 function onPlayersTblSort(property, direction, dataType) {
     playersTbl_sort = {property: property, direction: direction, dataType: dataType};
+    // jump back to top
+    var topRowId = $$('playersTbl').getIdByIndex(0);
+    $$('playersTbl').showItem(topRowId);
 }
 function onSearchIconClick(event) {
     ctrl_handleSearchBox(searchBy)
