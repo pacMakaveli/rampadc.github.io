@@ -5,6 +5,7 @@ var playersTbl_sort = {property: "name", direction: "asc", dataType: "string"};
 var searchSuggestionsLists;
 
 var searchBy = "tribe";
+var achHoverDispBool = true;
 
 function startPreloader() {
     webix.message("Preparing databases...");
@@ -59,13 +60,21 @@ function startGUI(lists, t10, uT) {
                     {id: 2, value: "Player"},
                     {id: 3, value: "Province"}
                 ],
-                width: 300
+                width: 265
             },
             {
                 view: "search",
                 id: "searchBox",
                 placeholder: "Enter a name",
                 suggest: searchSuggestionsLists.tribesList
+            },
+            {
+                view: "checkbox",
+                id: "showMoreAch_cb",
+                label: "Show achievements on hover",
+                labelWidth: 200,
+                width: 220,
+                value: achHoverDispBool
             }
         ]
     };
@@ -98,7 +107,10 @@ function startGUI(lists, t10, uT) {
                     {id: "cav", header: ["Cav", {content: "numberFilter", placeholder: ">=500"}], sort: "int"},
                     {id: "siege", header: ["Siege", {content: "numberFilter", placeholder: ">=100"}], sort: "int"}
                 ],
-                select: "row"
+                select: "row",
+                tooltip: function(obj, row) {
+
+                }
             }
         ]
     };
@@ -184,6 +196,12 @@ function attachEvents() {
     $$('playersTbl').attachEvent("onAfterSort", onPlayersTblSort);
     $$('playersTbl').attachEvent("onItemDblClick", onPlayersTblDblClick);
     $$('searchOption').attachEvent("onChange", onSearchOptionChanged);
+    $$('showMoreAch_cb').attachEvent("onChange", onToggleAchHover);
+}
+
+function onToggleAchHover() {
+    achHoverDispBool = $$('showMoreAch_cb').getValue();
+    console.log(achHoverDispBool);
 }
 
 function onSearchOptionChanged(val) {
