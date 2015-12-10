@@ -72,9 +72,7 @@ function createHex(col, row) {
 function convertToGeoFeature(villages) {
     var features = [];
 
-    //for(var i = 0; i < villages.length; i++) {
-    for(var i = 0; i < 100; i++) {
-
+    for(var i = 0; i < villages.length; i++) {
         var feature = {
             type: "Feature",
             geometry: {
