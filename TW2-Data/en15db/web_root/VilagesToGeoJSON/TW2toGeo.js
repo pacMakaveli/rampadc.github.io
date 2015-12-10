@@ -1,9 +1,5 @@
 var hexRadius = calcHexRadius();
 
-function calcDisplacement(startX, startY, endX, endY) {
-
-}
-
 function calcDist(x1, y1, x2, y2) {
     var dx = x1 - x2;
     var dy = y1 - y2;
@@ -43,6 +39,13 @@ function calcGeoHexVertex(x,y,i) {
     var vertexX = x + hexRadius * Math.cos(angle_rad);
     var vertexY = y + hexRadius/2 * Math.sin(angle_rad);
 
+    var verticalExtend = hexRadius/8.62; // this is so hacky
+    if(i == 1) {
+        vertexY += verticalExtend;
+    } else if(i == 4){
+        vertexY -= verticalExtend;
+    }
+
     return [
         Number(vertexX.toFixed(10)),
         Number(vertexY.toFixed(10))
@@ -70,7 +73,7 @@ function convertToGeoFeature(villages) {
     var features = [];
 
     //for(var i = 0; i < villages.length; i++) {
-    for(var i = 0; i < 80; i++) {
+    for(var i = 0; i < 100; i++) {
 
         var feature = {
             type: "Feature",
