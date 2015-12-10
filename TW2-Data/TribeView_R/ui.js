@@ -97,8 +97,8 @@ function startGUI(lists, t10, uT) {
                     {id: "name", header: ["Name", {id: "playerNameFilter", content: "textFilter"}], sort:"string", fillspace: true},
                     {id: "id", header: "Id"},
                     {id: "points", header: ["Points", {content: "numberFilter", placeholder: ">=10000"}], sort:"int"},
-                    {id: "numVillages", header: ["Villages", {content:"numberFilter"}], sort:"int"},
-                    {id: "ppv", header: ["PPV", {content: "numberFilter"}], sort: "int"},
+                    {id: "numVillages", header: ["Villages", {content:"numberFilter", placeholder: ">=20"}], sort:"int"},
+                    {id: "ppv", header: ["PPV", {content: "numberFilter", placeholder: ">=3000"}], sort: "int"},
                     {id: "tribeTag", header: ["Tribe Tag", {content: "textFilter"}], sort: "string"},
 
                     {id: "away", header: "Away (days)", sort: "int", batch: 1, template:function(obj) {return obj.away.toFixed(2)}},
