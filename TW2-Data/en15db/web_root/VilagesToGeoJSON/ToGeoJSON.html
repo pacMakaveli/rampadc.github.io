@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TW2 Villages to GeoJSON</title>
+</head>
+<body>
+<input type="file" id="inputBtn">
+<script>
+    console.clear();
+
+    var nameRegex = /([0-9]+)\.json/;
+    var timestamp;
+    var villagesJSON;
+
+    /* UI events */
+    inputBtn.addEventListener('change', onFilesSelected);
+    function onFilesSelected(event) {
+        var file = event.target.files; // FileList object
+        file = file[0];
+        console.log(file);
+        timestamp = nameRegex.exec(file.name);
+        if(timestamp != null) {
+            timestamp = parseInt(timestamp[1]);
+        }
+        console.log('Timestamp: ', timestamp);
+
+        var fr = new FileReader();
+        fr.onload = function() {
+            villagesJSON = JSON.parse(fr.result);
+            convertToGeoJSON(villagesJSON.villages);
+        };
+        fr.readAsText(file);
+    }
+
+    function convertToGeoJSON(villages) {
+        console.log("Commencing conversion");
+
+        for(var i = 0; i < villages.length; i++) {
+            var feature = {
+                type: "Feature",
+                geometry: {
+                    type: "Polygon",
+                    coordinates: calcHexCoord(villages[i].x, villages[i].y)
+                },
+                properties: villages[i]
+            };
+        }
+    }
+
+    function calcHexCoord(x,y) {
+        // TW2 uses even-r hex grid
+
+    }
+
+    /**
+     * Functions from http://www.redblobgames.com/grids/hexagons/
+     */
+    function offsetToPixel(col, row, size) {
+        // pointy even-r
+        var x = size * sqrt(3) * (col - 0.5 * (row&1));
+        var y = size * 3/2 * row;
+        return {x: x, y: y};
+    }
+
+    function getHexCorners(center, size) {
+        // pointy even-r
+        var corners = [];
+        for(var i = 0; i < 6; i++) {
+            var angle_deg = 60 * i   + 30;
+            var angle_rad = Math.PI / 180 * angle_deg;
+            corners.push({
+                x: center.x + size * cos(angle_rad),
+                y: center.y + size * sin(angle_rad)
+            });
+        }
+    }
+</script>
+</body>
+</html>
