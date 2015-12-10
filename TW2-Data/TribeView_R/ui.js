@@ -94,9 +94,13 @@ function startGUI(lists, t10, uT) {
                 id: 'playersTbl',
                 visibleBatch: 1,
                 columns: [
-                    {id: "name", header: ["Name", {id: "playerNameFilter", content: "textFilter"}], fillspace: true, sort:"string"},
+                    {id: "name", header: ["Name", {id: "playerNameFilter", content: "textFilter"}], sort:"string", fillspace: true},
                     {id: "id", header: "Id"},
+                    {id: "tribeTag", header: ["Tribe Tag", {content: "textFilter"}], sort: "string"},
                     {id: "points", header: ["Points", {content: "numberFilter", placeholder: ">=10000"}], sort:"int"},
+                    {id: "numVillages", header: ["Villages", {content:"numberFilter"}], sort:"int"},
+                    {id: "ppv", header: ["PPV", {content: "numberFilter"}], sort: "int"},
+
                     {id: "away", header: "Away (days)", sort: "int", batch: 1, template:function(obj) {return obj.away.toFixed(2)}},
                     {id: "beingNobled", header: ["Attacked",{content: "numberFilter", placeholder: "0"}], batch: 1,  sort:"int"},
                     {id: "rank", header: "Rank", sort:"int", batch: 1},

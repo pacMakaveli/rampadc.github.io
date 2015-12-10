@@ -40,5 +40,13 @@ function ctrl_handleSearchBox(s) {
     } else {
     }
 
+    for(var i = 0; i < players.length; i++) {
+        players[i].numVillages = players[i].villages.length;
+        players[i].ppv = 0;
+        for(var j = 0; j < players[i].villages.length; j++) {
+            players[i].ppv += players[i].villages[j].points;
+        }
+        players[i].ppv = Math.round(players[i].ppv / players[i].numVillages);
+    }
     ui_displayPlayersInfo(players);
 }
