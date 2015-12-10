@@ -119,6 +119,7 @@ function startGUI(lists, t10, uT) {
                     {id: "wod", header: ["WOD", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
                     {id: "sg", header: ["SG", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2}
                 ],
+                resizeColumn: true,
                 //tooltip: {
                 //    template:"#name#: LOW #low# | WSW #wsw# | GD #gd# | WOS #wos# | WOR #wor# | H&N #hnn# | WOD #wod# | SG #sg#",
                 //    dx: 0,
