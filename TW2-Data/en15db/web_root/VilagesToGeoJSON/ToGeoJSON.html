@@ -3,82 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>TW2 Villages to GeoJSON</title>
-    <script src="TW2toGeo.js"></script>
+
+    <script src="defiant-latest.min.js"></script>
 </head>
 <body>
 <p>Load in original villages JSON and Combined_PA.json</p>
 <input type="file" id="inputBtn" multiple>
-<script>
-    console.clear();
-
-    var vNameRegex = /Villages\.json/;
-    var villagesJSON;
-
-    var geoJSON;
-
-    var vFile, paFile;
-
-    /* UI events */
-    inputBtn.addEventListener('change', onFilesSelected);
-    function onFilesSelected(event) {
-        var files = event.target.files; // FileList object
-
-        villageFileName = vNameRegex.exec(files[0].name);
-        if(villageFileName != null) {
-            vFile = files[0];
-        } else {
-            vFile = files[1];
-        }
-
-        var frV = new FileReader();
-        frV.onload = function() {
-            villagesJSON = JSON.parse(frV.result);
-
-            geoJSON = {
-                type: "FeatureCollection",
-                features: convertToGeoFeature(villagesJSON.villages)
-            };
-//            console.clear();
-//            console.log(JSON.stringify(geoJSON));
-            console.save(geoJSON, "villagesGeoJSON.json");
-        };
-        frV.readAsText(vFile);
-    }
-
-    /**
-     * Helper save function
-     */
-    (function(console) {
-                console.save = function(data, filename) {
-
-                    if (!data) {
-                        console.error('Console.save: No data');
-                        return;
-                    }
-
-                    if (!filename)
-                        filename = 'console.json';
-                    if (typeof data === "object") {
-                        data = JSON.stringify(data, undefined, 4)
-                    }
-
-                    var blob = new Blob([data],{
-                                type: 'text/json'
-                            })
-                            ,
-                            e = document.createEvent('MouseEvents')
-                            ,
-                            a = document.createElement('a');
-
-                    a.download = filename;
-                    a.href = window.URL.createObjectURL(blob);
-                    a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
-                    e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
-                    a.dispatchEvent(e)
-                }
-            }
-    )(console);
-
-</script>
+<script src="TW2toGeo.js"></script>
 </body>
 </html>
