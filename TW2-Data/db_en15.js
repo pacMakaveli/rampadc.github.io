@@ -17,6 +17,7 @@ Array.prototype.unique = function() {
 }
 ;
 
+// Local location
 var dbPA_path   = "./en15db/db/Combined_PA.json";
 var dbV_path    = "./en15db/db/Villages.json";
 var dbT_path    = "./en15db/db/Tribes.json";
