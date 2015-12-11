@@ -16,10 +16,11 @@ package
 		
 		private var _originId:Number;
 		private var _targetId:Number;
+		private var _type:String;
 		
 		public function Attack_Save(origin:Point, originName:String, originId:Number, 
 							   target:Point, targetName:String, targetId:Number, 
-							   landingDate:Date, launchDate:Number, attackUnitType:String=null)
+							   landingDate:Date, launchDate:Number, type:String, attackUnitType:String=null)
 		{
 			_origin = new Point(origin.x, origin.y);
 			_target = new Point(target.x, target.y);
@@ -30,9 +31,20 @@ package
 			
 			_landingDate = new Date(landingDate);
 			_launchDate = launchDate;
+			_type = attType;
 			_attackUnitType = attackUnitType;
 		}
 		
+		public function get attType():String
+		{
+			return _type;
+		}
+
+		public function set attType(value:String):void
+		{
+			_type = value;
+		}
+
 		public static function formatTimerPeriod(ts:Number):String {
 			var d:Number = Math.floor(ts/86400);
 			var h:Number = Math.floor((ts - d*86400)/3600);

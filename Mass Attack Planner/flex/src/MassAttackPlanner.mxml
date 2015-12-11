@@ -169,6 +169,7 @@
 						ac.villageCoor = attV_coor[i];
 						ac.villageName = attV_name[i];
 						ac.villageId = attV_id[i];
+						ac.targetId = tarV_id[i];
 						ac.targetsList = targetsStr;
 						ac.worldSpeed = 1;
 						attComponents.push(ac);
@@ -310,18 +311,10 @@
 				
 				for(var i:Number = 0; i < planVec.length; i++) {
 					if(fake == true) {
-						type = "fake"; 
-					} else {
-						if(planVec[i].support) {
-							type = "support";
-						} else {
-							if(planVec[i].attackUnitType != AttComponent.SNOB) {
-								type = "normal";
-							} else if(planVec[i].attackUnitType == AttComponent.SNOB) {
-								type = "noble";
-							}
-						}
+						planVec[i].attType = "fake";
 					}
+					
+					type = planVec[i].attType;
 					
 					plan += "Origin: " + planVec[i].originName + ' (' + String(planVec[i].origin.x) + "|" + String(planVec[i].origin.y) + ")\n";
 					plan += "Target: " + planVec[i].targetName + ' (' + String(planVec[i].target.x) + "|" + String(planVec[i].target.y) + ")\n";
@@ -436,7 +429,7 @@
 					saveContent.push(new Attack_Save(
 						planVec[i].origin, planVec[i].originName, planVec[i].originId,
 						planVec[i].target, planVec[i].targetName, planVec[i].targetId,
-						planVec[i].landingDate, planVec[i].launchDate.time, planVec[i].attackUnitType));
+						planVec[i].landingDate, planVec[i].launchDate.time, planVec[i].attType, planVec[i].attackUnitType));
 				}
 				var fileName:String = "Launch (Local) " + file_formateDateToLocal(planVec[0].launchDate) + " _ Land (UTC) " + file_formatDateToUTC(saveContent[0].landingDate);
 				fileName += ".json";

@@ -6,10 +6,21 @@ html, body {
 
 #map {
     height: 100%;
+    z-index: 0;
+}
+
+#miniMap {
+    height: 30%;
+    width: 30%;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    border-style: solid;
+    border-color: forestgreen;
 }
 
 .leaflet-container {
-    background: #333333;
+    background: #436213;
 }
 
 .info {

@@ -18,6 +18,7 @@ package
 		private var _targetId:Number;
 		
 		private var _support:Boolean;
+		private var _attType:String;
 		
 		public function Attack(origin:Point, originName:String, originId:Number, 
 							   target:Point, targetName:String, targetId:Number, 
@@ -213,6 +214,28 @@ package
 		public function set target(value:Point):void
 		{
 			_target = value;
+		}
+		
+		public function get attType():String {
+			var retType:String = "";
+			
+			if(this.support) {
+				retType = "support";
+			} else {
+				if(this.attackUnitType != AttComponent.SNOB) {
+					retType = "normal";
+				} else if(this.attackUnitType == AttComponent.SNOB) {
+					retType = "noble";
+				}
+			}
+			
+			return retType;
+		}
+		
+		public function set attType(value:String):void {
+			if(value == "fake") {
+				_attType = "fake";
+			}
 		}
 	}
 }
