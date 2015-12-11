@@ -10,13 +10,25 @@ html, body {
 }
 
 #miniMap {
-    height: 30%;
-    width: 30%;
+    height: 25%;
+    width: 25%;
     position: absolute;
     right: 0px;
     bottom: 0px;
     border-style: solid;
-    border-color: forestgreen;
+    border-width: 1px;
+    border-color: black;
+}
+
+#statusBox {
+    height: 60px;
+    width: 500px;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    background: #000;
+    opacity: 0.6;
+    color: white
 }
 
 .leaflet-container {

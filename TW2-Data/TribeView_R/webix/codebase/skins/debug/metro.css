@@ -660,7 +660,7 @@ x\:ui {
   /*IE8*/
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
-/*legend block*/
+/*activityLegend block*/
 .webix_chart_legend {
   position: absolute;
   z-index: 1000;

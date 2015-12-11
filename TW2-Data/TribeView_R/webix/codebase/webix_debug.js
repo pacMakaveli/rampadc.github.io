@@ -22725,8 +22725,8 @@ webix.protoUI({
 		*/
 		
 		if(this._settings.legend){
-			if(!this.canvases["legend"])
-				this.canvases["legend"] =  this._createCanvas("legend");
+			if(!this.canvases["activityLegend"])
+				this.canvases["activityLegend"] =  this._createCanvas("activityLegend");
 			this._drawLegend(
 				this.data.getRange(),
 				this._content_width,
@@ -23280,26 +23280,26 @@ webix.protoUI({
 
 	},
 	/**
-	*   renders legend block
+	*   renders activityLegend block
 	*   @param: ctx - canvas object
 	*   @param: data - object those need to be displayed
 	*   @param: width - the width of the container
 	*   @param: height - the height of the container
 	*/
 	_drawLegend:function(data,width){
-		/*position of the legend block*/
+		/*position of the activityLegend block*/
 		var i, legend, legendContainer, legendHeight, legendItems, legendWidth, style,
 			x=0, y= 0, ctx, itemColor, disabled, item;
 
 		data = data||[];
 		width = width||this._content_width;
 		ctx = this.canvases["legend"].getCanvas();
-		/*legend config*/
+		/*activityLegend config*/
 		legend = this._settings.legend;
-		 /*the legend sizes*/
+		 /*the activityLegend sizes*/
 
 		style = (this._settings.legend.layout!="x"?"width:"+legend.width+"px":"");
-		/*creation of legend container*/
+		/*creation of activityLegend container*/
 
 		if(this._legendObj){
 
@@ -23318,7 +23318,7 @@ webix.protoUI({
 		this._legendObj = legendContainer;
 		this._contentobj.appendChild(legendContainer);
 
-		/*rendering legend text items*/
+		/*rendering activityLegend text items*/
 		legendItems = [];
 		if(!legend.values)
 			for(i = 0; i < data.length; i++){
@@ -23333,9 +23333,9 @@ webix.protoUI({
 	   	legendWidth = legendContainer.offsetWidth;
 	    legendHeight = legendContainer.offsetHeight;
 
-		/*this._settings.legend.width = legendWidth;
-		this._settings.legend.height = legendHeight;*/
-		/*setting legend position*/
+		/*this._settings.activityLegend.width = legendWidth;
+		this._settings.activityLegend.height = legendHeight;*/
+		/*setting activityLegend position*/
 		if(legendWidth<width){
 			if(legend.layout == "x"&&legend.align == "center"){
 			    x = (width-legendWidth)/2;
@@ -23378,7 +23378,7 @@ webix.protoUI({
 		legendItems = null;
 	},
 	/**
-	*   appends legend item to legend block
+	*   appends activityLegend item to activityLegend block
 	*   @param: ctx - canvas object
 	*   @param: obj - data object that needs being represented
 	*/
@@ -23386,7 +23386,7 @@ webix.protoUI({
 		var style = "";
 		if(this._settings.legend.layout=="x")
 			style = "float:left;";
-		/*the text of the legend item*/
+		/*the text of the activityLegend item*/
 		var text = webix.html.create("DIV",{
 			"style":style+"padding-left:"+(10+this._settings.legend.marker.width)+"px",
 			"class":"webix_chart_legend_item"+(disabled?" hidden":"")
@@ -23397,7 +23397,7 @@ webix.protoUI({
 		return text;
 	},
 	/**
-	*   draw legend colorful marder
+	*   draw activityLegend colorful marder
 	*   @param: ctx - canvas object
 	*   @param: x - the horizontal position of the marker
 	*   @param: y - the vertical position of the marker
@@ -23499,11 +23499,11 @@ webix.protoUI({
 		
 		if(this._settings.legend){
 			var legend = this._settings.legend;
-			/*legend size*/
+			/*activityLegend size*/
 			var legendWidth = this._settings.legend.width;
 			var legendHeight = this._settings.legend.height;
 		
-			/*if legend is horizontal*/
+			/*if activityLegend is horizontal*/
 			if(legend.layout == "x"){
 				if(legend.valign == "center"){
 					if(legend.align == "right")
@@ -23784,11 +23784,11 @@ webix.extend(webix.ui.chart, {
 	_getPieParameters:function(point0,point1){
 		/*var offsetX = 0;
 		 var offsetY = 0;
-		 if(this._settings.legend &&this._settings.legend.layout!="x")
-		 offsetX = this._settings.legend.width*(this._settings.legend.align=="right"?-1:1);
+		 if(this._settings.activityLegend &&this._settings.activityLegend.layout!="x")
+		 offsetX = this._settings.activityLegend.width*(this._settings.activityLegend.align=="right"?-1:1);
 		 var x0 = (x + offsetX)/2;
-		 if(this._settings.legend &&this._settings.legend.layout=="x")
-		 offsetY = this._settings.legend.height*(this._settings.legend.valign=="bottom"?-1:1);
+		 if(this._settings.activityLegend &&this._settings.activityLegend.layout=="x")
+		 offsetY = this._settings.activityLegend.height*(this._settings.activityLegend.valign=="bottom"?-1:1);
 		 var y0 = (y+offsetY)/2;*/
 		var width = point1.x-point0.x;
 		var height = point1.y-point0.y;
@@ -31335,7 +31335,7 @@ webix.protoUI({
 		webix.assert(obj.body, "fieldset must have not-empty body");
 
 		this._viewobj.className += " webix_fieldset";
-		this._viewobj.innerHTML =  "<fieldset><legend></legend><div></div></fieldset>";
+		this._viewobj.innerHTML =  "<fieldset><activityLegend></activityLegend><div></div></fieldset>";
 	},
 	label_setter:function(value){
 		this._viewobj.firstChild.childNodes[0].innerHTML = value;
