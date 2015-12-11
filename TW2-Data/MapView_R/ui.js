@@ -17,14 +17,58 @@ info.onAdd = function(map) {
 };
 info.update = function(props) {
     // update control based on feature properties passed
-    this._div.innerHTML = "<h4>Info</h4>";
+    var str = "<h4>Info</h4>";
     if(props) {
+        str += "<b>Village: </b>" + props.name + " (" + props.x + "|" + props.y + ") <br>";
+        str += "<b>Points:</b> " + props.points + "<br><br>";
+
+        if(props.character_id == null) {
+            str += "<b>Barbarian village</b>";
+        } else {
+            str += "<b>Player: </b>" + props.character_name + " (" + props.character_id + ")<br>";
+            str += "<b>Points:</b> " + props.character_points + "<br>";
+            str += "<b>Rank: </b>" + props.rank + "<br>";
+            str += "<b>Province: </b>" + props.province_name + "<br>";
+            str += "<b>Away: </b>" + String(props.away.toFixed(2)) + " days<br>";
+            str += "<b>OBP: </b>" + props.obp + "<br>";
+            str += "<b>DBP: </b>" + props.dbp + "<br>";
+            str += "<b>Inf: </b>" + props.inf + "<br>";
+            str += "<b>Cav: </b>" + props.cav + "<br>";
+            str += "<b>Siege: </b>" + props.siege + "<br><br>";
+
+            if(props.tribe_name != null) {
+                str += "<b>Tribe:</b> " + props.tribe_name + " (" + props.tribe_tag + ")<br>";
+            } else {
+                str += "<b>Tribe:</b> N/A<br>";
+            }
+        }
 
     } else {
-        this._div.innerHTML += "Hover over a village";
+        str += "Hover over a village";
     }
+
+    this._div.innerHTML = str;
 };
 info.addTo(map);
+
+var legend = L.control({position: 'bottomright'});
+legend.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info legend'),
+        grades = [0,1,2,3,4,5,6,7];
+
+    div.innerHTML +=
+        '<i style="background:' + activityColor({away:0,charId:null}) + '"></i> ' + 'Barb<br>';
+    // loop through our density intervals and generate a label with a colored square for each interval
+    for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+            '<i style="background:' + activityColor({away:grades[i],charId:1}) + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    }
+
+    return div;
+};
+legend.addTo(map);
 
 /* Styles */
 function activityColor(a) {
@@ -47,10 +91,10 @@ function activityColor(a) {
 function styleByActivity(feature) {
     return {
         fillColor: activityColor({away: feature.properties.away, charId: feature.properties.character_id}),
-        weight: 0.25,
+        weight: 0.5,
         color: "black",
         opacity: 1,
-        fillOpacity: 0.8
+        fillOpacity: 1
     };
 }
 /* Load data */
@@ -80,7 +124,7 @@ function highlightFeature(e) {
         weight: 4,
         color: "#666",
         dashArray: '',
-        fillOpacity: 0.7
+        fillOpacity: 0.9
     });
 
     if (!L.Browser.ie && !L.Browser.opera) {
