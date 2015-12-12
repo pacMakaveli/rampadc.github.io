@@ -8,6 +8,8 @@ var precalc_awayDays;
 var newDBTime, oldDBTime;
 var newDB;
 
+var playersDB_updated;
+
 /* Setup */
 function commenceUpdate(newPlayersDBList, pJSON, aJSON, playersDB, newDB, precalc_awayDays) {
     var oldPlayersIdSearch1 = "//players[id='";
@@ -20,7 +22,7 @@ function commenceUpdate(newPlayersDBList, pJSON, aJSON, playersDB, newDB, precal
     var siegeRecruited2 = "]/achievements[type='recruited_siege_weapons']";
 
     // Create an empty updated DB
-    var playersDB_updated = {
+    playersDB_updated = {
         players: [],
         time: []
     };
@@ -51,34 +53,42 @@ function commenceUpdate(newPlayersDBList, pJSON, aJSON, playersDB, newDB, precal
 
         //Lord of War (LOW) // done
         var low = JSON.search(pAchSubJSON, "//achievements[type='players_attacked_unique']");
+        var lowProgress = (low[0] != null ? low[0].progress : 0);
         low = (low[0] != null ? low[0].level : 0);
 
         // Gravedigger (GD) // done
         var gd = JSON.search(pAchSubJSON, "//achievements[type='losses']");
+        var gdProgress = (gd[0] != null ? gd[0].progress : 0);
         gd = (gd[0] != null ? gd[0].level : 0);
 
         // Way of Sword (WSW) // done
         var wsw = JSON.search(pAchSubJSON, "//achievements[type='bash_points_offense']");
+        var wswProgress = (wsw[0] != null ? wsw[0].progress : 0);
         wsw = (wsw[0] != null ? wsw[0].level : 0);
 
         // Way of Soldier (WOS) // done
         var wos = JSON.search(pAchSubJSON, "//achievements[type='recruited_infantry']");
+        var wosProgress = (wos[0] != null ? wos[0].progress : 0);
         wos = (wos[0] != null ? wos[0].level : 0);
 
         //  Way of Rider (WOR) // done
         var wor = JSON.search(pAchSubJSON, "//achievements[type='recruited_cavalry']");
+        var worProgress = (wor[0] != null ? wor[0].progress : 0);
         wor = (wor[0] != null ? wor[0].level : 0);
 
         // Hammer and Nail (H&N) or (hnn) // done
         var hnn = JSON.search(pAchSubJSON, "//achievements[type='recruited_siege_weapons']");
+        var hnnProgress = (hnn[0] != null ? hnn[0].progress : 0);
         hnn = (hnn[0] != null ? hnn[0].level : 0);
 
         // Way of Shield (WOD) // done
         var wod = JSON.search(pAchSubJSON, "//achievements[type='bash_points_defense']");
+        var wodProgress = (wod[0] != null ? wod[0].progress : 0);
         wod = (wod[0] != null ? wod[0].level : 0);
 
         // Stolen Goods (SG) // done
         var sg = JSON.search(pAchSubJSON, "//achievements[type='loot']");
+        var sgProgress = (sg[0] != null ? sg[0].progress : 0);
         sg = (sg[0] != null ? sg[0].level : 0);
 
         var awayDays = 0;
@@ -106,14 +116,14 @@ function commenceUpdate(newPlayersDBList, pJSON, aJSON, playersDB, newDB, precal
             }
         }
 
-		if(newPlayersDBList[i].tribe_name == null) {
-			newPlayersDBList[i].tribe_name = "";
-		}
-		
-		if(newPlayersDBList[i].tribe_tag == null) {
-			newPlayersDBList[i].tribeTag = "";
-		}
-		
+        if(newPlayersDBList[i].tribe_name == null) {
+            newPlayersDBList[i].tribe_name = "";
+        }
+
+        if(newPlayersDBList[i].tribe_tag == null) {
+            newPlayersDBList[i].tribeTag = "";
+        }
+
         var updatedPlayer =  {
             id: newPlayersDBList[i].character_id,
             name: newPlayersDBList[i].character_name,
@@ -131,13 +141,21 @@ function commenceUpdate(newPlayersDBList, pJSON, aJSON, playersDB, newDB, precal
             tribeTag: newPlayersDBList[i].tribe_tag,
             tribePoints: newPlayersDBList[i].tribe_points,
             low: low,
+            lowProgress: lowProgress,
             gd: gd,
+            gdProgress: gdProgress,
             wsw: wsw,
+            wswProgress: wswProgress,
             wos: wos,
+            wosProgress: wosProgress,
             wor: wor,
+            worProgress: worProgress,
             hnn: hnn,
+            hnnProgress: hnnProgress,
             wod: wod,
+            wodProgess: wodProgress,
             sg: sg,
+            sgProgress: sgProgress,
             beingNobled: beingNobled
         };
 
@@ -146,7 +164,9 @@ function commenceUpdate(newPlayersDBList, pJSON, aJSON, playersDB, newDB, precal
     } //END for loop
     playersDB_updated.time = newDBTime.getTime();
     console.log('Completed update');
+    var playerDB_updatedStr = JSON.stringify(playersDB_updated);
     console.save(playersDB_updated, "Combined_PA.json");
+    //download("Combined_PA.json", playerDB_updatedStr);
 }
 
 /* Load in database */
@@ -280,3 +300,18 @@ function processInputFiles() {
     }
 )(console);
 
+// HELPER FUNCTION
+function download(filename, text) {
+    var pom = document.createElement('a');
+    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    pom.setAttribute('download', filename);
+
+    if (document.createEvent) {
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        pom.dispatchEvent(event);
+    }
+    else {
+        pom.click();
+    }
+}

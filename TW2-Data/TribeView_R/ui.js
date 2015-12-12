@@ -110,21 +110,17 @@ function startGUI(lists, t10, uT) {
                     {id: "cav", header: ["Cav", {content: "numberFilter", placeholder: ">=500"}], sort: "int", batch: 1},
                     {id: "siege", header: ["Siege", {content: "numberFilter", placeholder: ">=100"}], sort: "int", batch: 1},
 
-                    {id: "low", header: ["LOW", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
-                    {id: "gd", header: ["GD", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
-                    {id: "wsw", header: ["WSW", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
-                    {id: "wos", header: ["WOS", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
-                    {id: "wor", header: ["WOR", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
-                    {id: "hnn", header: ["H&N", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
-                    {id: "wod", header: ["WOD", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2},
-                    {id: "sg", header: ["SG", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2}
+                    {id: "low", header: ["LOW", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2, tooltip: "#lowProgress#"},
+                    {id: "gd", header: ["GD", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2, tooltip: "#gdProgress#"},
+                    {id: "wsw", header: ["WSW", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2, tooltip: "#wswProgress#"},
+                    {id: "wos", header: ["WOS", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2, tooltip: "#wosProgress#"},
+                    {id: "wor", header: ["WOR", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2, tooltip: "#worProgress#"},
+                    {id: "hnn", header: ["H&N", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2, tooltip: "#hnnProgress#"},
+                    {id: "wod", header: ["WOD", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2, tooltip: "#wodProgress#"},
+                    {id: "sg", header: ["SG", {content: "numberFilter", placeholder: ">=1"}], sort: "int", batch: 2, tooltip: "#sgProgress#"}
                 ],
                 resizeColumn: true,
-                //tooltip: {
-                //    template:"#name#: LOW #low# | WSW #wsw# | GD #gd# | WOS #wos# | WOR #wor# | H&N #hnn# | WOD #wod# | SG #sg#",
-                //    dx: 0,
-                //    dy: -40
-                //},
+                tooltip: true,
                 select: "row"
             }
         ]
