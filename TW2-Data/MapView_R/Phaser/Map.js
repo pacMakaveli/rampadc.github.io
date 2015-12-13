@@ -48,7 +48,7 @@ Map.prototype = {
         this.barbTiles = {};
         this.playerTiles = {};
 
-        
+
         for(x = -1; x < this.mapSize.x+1; x++) {
             for(y = -1; y < this.mapSize.y+1; y++) {
                 //idx = Math.floor(Math.random()*18);
