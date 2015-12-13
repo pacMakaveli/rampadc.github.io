@@ -20,4 +20,3 @@ var mapGeoJson, miniMapGeoJson;
 /* Layer groups */
 var barbLayerGroup;
 var playerLayerGroup;
-
