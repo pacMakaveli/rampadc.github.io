@@ -1,4 +1,9 @@
 var map = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, "mapContainer");
+var mapView = {
+    x: 0,
+    y: 0
+};
+
 var Map = function (map) {
     this.hexRadius = R.tileWidth / Math.sqrt(3);
     this.tileHexHeightRatio = R.tileHeight/(this.hexRadius*2);
@@ -6,7 +11,8 @@ var Map = function (map) {
     this.barbTiles = null;
     this.playerTiles = null;
 
-    this.zoom = 1;
+    this.scale = null;
+    this.mapSize = null;
 };
 
 Map.prototype = {
@@ -36,45 +42,51 @@ Map.prototype = {
         }
     },
     create: function () {
+        var x, y, loc;
         // create a background map
-        this.bgTiles = this.add.group(this.game.world, "bgTiles", false, true);
-        var x, y, idx, loc;
+        this.bgTiles = {};
+        this.barbTiles = {};
+        this.playerTiles = {};
 
-        var xSize = window.innerWidth * this.zoom / this.hexRadius * Math.sqrt(3);
-        var ySize = window.innerHeight * this.zoom / this.hexRadius * 2;
-
-        for(x = 0; x < xSize; x++) {
-            for(y = 0; y < ySize; y++) {
-                idx = Math.floor(Math.random()*18);
+        
+        for(x = -1; x < this.mapSize.x+1; x++) {
+            for(y = -1; y < this.mapSize.y+1; y++) {
+                //idx = Math.floor(Math.random()*18);
                 loc = hex_offsetToPixel(x,y, this.hexRadius, this.tileHexHeightRatio);
-                this.bgTiles.create(loc.x, loc.y - this.hexRadius, "empty"+String(idx));
+                this.bgTiles.create(loc.x, loc.y, "empty0");
             }
         }
 
-        // create a barb map
-        this.barbTiles = this.add.group(this.game.world, "barbTiles", false, true);
-        for(x = 0; x < xSize; x++) {
-            for(y = 0; y < ySize; y++) {
-                loc = hex_offsetToPixel(x,y, this.hexRadius, this.tileHexHeightRatio);
-                this.barbTiles.create(loc.x, loc.y - this.hexRadius, "barbFort");
-            }
-        }
-
-        // create a player map
-        this.playerTiles = this.add.group(this.game.world, "playerTiles", false, true);
-
-        //// listen to mouse events
-        //map.input.mouse.capture = true;
-        //map.input.mouse.mouseWheelCallback = onMouseWheel;
+        map.input.mouse.mouseWheelCallback = onMouseWheel;
     },
     update: function () {
+
     }
 };
 
 function onMouseWheel(event) {
-    if(map.input.mouse.wheelDelta < 0) {
+    var scale = map.world.scale.x;
+    if((scale <= 2) && (scale >= 0.1)){
+        if(map.input.mouse.wheelDelta < 0) {
+            // zoom out
+            scale *= 0.9;
+        } else {
+            // zoom in
+            scale *= 1.1;
+        }
     }
 
+    // Limit scaling factor
+    if(scale > 2) {
+        scale = 2;
+    } else if(scale < 0.1) {
+        scale = 0.1;
+    }
+
+    map.world.scale = {
+        x: scale,
+        y: scale
+    };
 }
 
 function hex_offsetToPixel(col, row, radius, heightRatio) {

@@ -36,11 +36,9 @@
           <file leaf-file-name="Map.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/MapView_R/Phaser/Map.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.7466216">
-                  <caret line="75" column="5" selection-start-line="75" selection-start-column="5" selection-end-line="75" selection-end-column="5" />
-                  <folding>
-                    <marker date="1449967081296" expanded="true" signature="2770:2812" placeholder="//..." />
-                  </folding>
+                <state vertical-scroll-proportion="0.49774775">
+                  <caret line="50" column="8" selection-start-line="50" selection-start-column="8" selection-end-line="50" selection-end-column="8" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -92,8 +90,8 @@
           <file leaf-file-name="Finished.html" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/../../../Javascript/Phaser/Phaser Tuts/tip1/Finished.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="1.6171694">
-                  <caret line="85" column="36" selection-start-line="85" selection-start-column="36" selection-end-line="86" selection-end-column="57" />
+                <state vertical-scroll-proportion="0.7888631">
+                  <caret line="43" column="0" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
@@ -821,19 +819,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../../Javascript/Phaser/Phaser Tuts/tip1/Finished.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.6171694">
-          <caret line="85" column="36" selection-start-line="85" selection-start-column="36" selection-end-line="86" selection-end-column="57" />
+        <state vertical-scroll-proportion="0.7888631">
+          <caret line="43" column="0" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MapView_R/Phaser/Map.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7466216">
-          <caret line="75" column="5" selection-start-line="75" selection-start-column="5" selection-end-line="75" selection-end-column="5" />
-          <folding>
-            <marker date="1449967081296" expanded="true" signature="2770:2812" placeholder="//..." />
-          </folding>
+        <state vertical-scroll-proportion="0.49774775">
+          <caret line="50" column="8" selection-start-line="50" selection-start-column="8" selection-end-line="50" selection-end-column="8" />
+          <folding />
         </state>
       </provider>
     </entry>
