@@ -10,6 +10,7 @@ var mouseDownStart = {x: 0, y: 0};
 var Map = function (map) {
     this.hexRadius = R.tileWidth / Math.sqrt(3);
     this.tileHexHeightRatio = R.tileHeight/(this.hexRadius*2);
+    console.log(this.tileHexHeightRatio);
     this.bgTiles = null;
     this.barbTiles = null;
     this.playerTiles = null;
