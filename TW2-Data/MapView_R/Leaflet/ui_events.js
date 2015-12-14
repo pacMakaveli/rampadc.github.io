@@ -47,7 +47,7 @@ function dualHighlight(e) {
     var props = layer.feature.properties;
     mapGeoJson.eachLayer(function(l) {
         if(l.feature.properties.character_id != null) {
-            if(l.feature.properties.character_name == props.character_name) {
+            if(l.feature.properties.character_id == props.character_id) {
                 l.setStyle(mapPlayerHighlightStyle);
             }
         }
@@ -55,7 +55,7 @@ function dualHighlight(e) {
 
     miniMapGeoJson.eachLayer(function(l) {
         if(l.feature.properties.character_id != null) {
-            if(l.feature.properties.character_name == props.character_name) {
+            if(l.feature.properties.character_id == props.character_id) {
                 l.setStyle(miniPlayerHighlightStyle);
             }
         }
@@ -86,13 +86,13 @@ function highlightMapFeature(e) {
         layer.bringToFront();
     }
 
-    info.update(layer.feature.properties, null);
+    //info.update(layer.feature.properties, null);
 }
 
 function resetMapHighlight(e) {
     dualUnhighlight(e);
 
-    info.update();
+    //info.update();
 }
 
 function onEachMiniMapFeature(feature, layer) {
@@ -113,10 +113,10 @@ function highlightMiniFeature(e) {
         layer.bringToFront();
     }
 
-    info.update(layer.feature.properties, null);
+    //info.update(layer.feature.properties, null);
 }
 
 function resetMiniHighlight(e) {
     miniMapGeoJson.resetStyle(e.target);
-    info.update();
+    //info.update();
 }

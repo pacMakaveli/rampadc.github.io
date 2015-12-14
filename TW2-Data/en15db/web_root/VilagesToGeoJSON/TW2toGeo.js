@@ -100,11 +100,11 @@ function convertToGeoFeature() {
     for(var i = 0; i < villages.length; i++) {
         var feature = createGeoFeatureWithoutProperties(villages[i].x, villages[i].y);
         if(villages[i].character_id != null) {
-            var playerData = JSON.search(pa, "//players[id='" + String(villages[i].character_id + "']"));
-            playerData = playerData[0];
-            feature.properties = villages[i].character_id;
+            //var playerData = JSON.search(pa, "//players[id='" + String(villages[i].character_id + "']"));
+            //playerData = playerData[0];
+            feature.properties.character_id = villages[i].character_id;
         } else {
-            feature.properties = villages[i].character_id;
+            feature.properties.character_id = villages[i].character_id;
         }
         console.log(i+1 + "/" + villages.length);
         features.push(feature);

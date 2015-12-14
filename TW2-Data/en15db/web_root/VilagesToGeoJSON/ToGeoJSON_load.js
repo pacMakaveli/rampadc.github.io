@@ -8,7 +8,7 @@ var vFile, paFile;
 var readyToStart = 0;
 var pa;
 
-const START_NUMBER = 2;
+const START_NUMBER = 1;
 /* UI events */
 inputBtn.addEventListener('change', onFilesSelected);
 function onFilesSelected(event) {
@@ -46,7 +46,7 @@ function onFilesSelected(event) {
         }
     };
 
-    frPA.readAsText(paFile);
+    //frPA.readAsText(paFile);
     frV.readAsText(vFile);
 }
 

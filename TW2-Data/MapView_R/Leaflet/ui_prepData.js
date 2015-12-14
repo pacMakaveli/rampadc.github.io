@@ -1,9 +1,9 @@
 /* Load data */
-info.update(null, "Preparing map");
+//info.update(null, "Preparing map");
 
 $.getJSON("./en15db/db/villagesGeo.json", function(json) {
     mapGeoJson = L.geoJson(json, {
-        style: styleByActivity,
+        style: styleNormalMap,
         onEachFeature: onEachMapFeature
     }).addTo(map);
 
@@ -12,5 +12,5 @@ $.getJSON("./en15db/db/villagesGeo.json", function(json) {
         onEachFeature: onEachMiniMapFeature
     }).addTo(miniMap);
 
-    info.update(null, "Ready to use");
+    //info.update(null, "Ready to use");
 });
