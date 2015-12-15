@@ -11,6 +11,8 @@ var pa;
 const START_NUMBER = 1;
 /* UI events */
 inputBtn.addEventListener('change', onFilesSelected);
+document.getElementById("genBgBtn").onclick = generateBackground;
+
 function onFilesSelected(event) {
     var files = event.target.files; // FileList object
 

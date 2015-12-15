@@ -1,15 +1,11 @@
-console.clear();
-
-var start = null;
-
+/**
+ * Created by CONG on 15-Dec-15.
+ */
 const TOP_DOWN_TO_SLANT_RATIO = 0.6240477174329043;
 
 // increase horz = dec vert
-//const HORZ_MODIFIER = 0.0264; // larger = more to the right
-//const VERT_MODIFIER = 1.774; // bigger = further
-
-const HORZ_MODIFIER = 0; // larger = more to the right
-const VERT_MODIFIER = 1; // bigger = further
+const HORZ_MODIFIER = 0.0264; // larger = more to the right
+const VERT_MODIFIER = 1.774; // bigger = further
 
 var mapTileHeight   = null;
 var mapTileWidth    = null;
@@ -53,7 +49,7 @@ function map_calcCenterCoor(tw2Col, tw2Row) {
 function map_calcVertices(center) {
     var vertices = [];
     var mapTileRadius1 = (mapTileWidth-HORZ_MODIFIER)/Math.sqrt(3);
-    var mapTileRadius2 = mapTileHeight/2 - 2/100; //
+    var mapTileRadius2 = mapTileHeight/2;
 
     var angles_deg = [20.92, 90, 159.08, 20.92+180, 270, 159.08+180]; // measured from Autodesk Inventor
     for(var i = 0; i < angles_deg.length; i++) {
@@ -81,62 +77,37 @@ function createHex(col, row) {
     return map_calcVertices(center);
 }
 
-function createGeoFeatureWithoutProperties(col, row) {
-    var feature = {
-        type: "Feature",
-        geometry: {
-            type: "Polygon",
-            coordinates: [
-                createHex(col, row)
-            ]
-        },
-        properties: {}
-    };
-    return feature;
-}
+function buildBg() {
 
-/** Public function **/
-function convertToGeoFeature() {
-    //console.log(pa);
-    var villages = villagesJSON.villages;
     var features = [];
-    for(var i = 0; i < 100; i++) {
-        var feature = createGeoFeatureWithoutProperties(villages[i].x, villages[i].y);
-        feature.properties = villages[i];
-
-        console.log(i+1 + "/" + villages.length);
-        features.push(feature);
+    for(var x = 500; x < 501; x++) {
+        for(var y = 500; y < 501; y++) {
+            var f = {
+                type: "Feature",
+                geometry: {
+                    type: "Polygon",
+                    coordinates: [
+                        createHex(x,y)
+                    ]
+                },
+                properties: {}
+            };
+            features.push(f);
+        }
+        console.log(String(x+1) + "/1000");
     }
-
     var featuresCollection = {
         type: "FeatureCollection",
         features: features
     };
-    console.save(featuresCollection, "villagesGeo.json");
+    return featuresCollection
 }
 
-function generateBackground() {
-    var worker = new Worker("BgGenWorker.js");
-
-    worker.addEventListener('message', function(e) {
-        console.log("DONE, saving data");
-        download("bg.json", e.data);
-    }, false);
-
-    worker.postMessage("start"); // Start the worker
-}
-
-function download(filename, text) {
-    var pom = document.createElement('a');
-    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    pom.setAttribute('download', filename);
-
-    if (document.createEvent) {
-        var event = document.createEvent('MouseEvents');
-        event.initEvent('click', true, true);
-        pom.dispatchEvent(event);
+self.addEventListener('message', function(e) {
+    var data = e.data;
+    if(e.data == "start") {
+        var bg = JSON.stringify(buildBg());
+        console.log('bg stringified');
+        self.postMessage(bg);
     }
-    else {
-        pom.click();
-    }
-}
+}, false);

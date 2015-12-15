@@ -11,11 +11,11 @@ var lastUpdatedTime;
 localStorage.dbReady = 0;
 
 Array.prototype.unique = function() {
-    for (var e = [], o = 0; o < this.length; o++)
-        -1 == e.indexOf(this[o]) && e.push(this[o]);
-    return e
-}
-;
+    var o = {}, i, l = this.length, r = [];
+    for(i=0; i<l;i+=1) o[this[i]] = this[i];
+    for(i in o) r.push(o[i]);
+    return r;
+};
 
 // Local location
 var dbPA_path   = "./en15db/db/Combined_PA.json";
@@ -190,21 +190,34 @@ function getPlayersFromProvince(province) {
 }
 
 function getPlayersByArea(x, y, w, h) {
-    var v = getVillages(x, y, w, h);
-    var pNames = [];
-    for(var i = 0; i < v.length; i++) {
-        pNames.push(v[i].charName);
-    }
-    pNames = pNames.unique();
+//*[villages/village_x=518 and villages/village_y=376]
+    var boundX = x + w + 1;
+    var boundY = y + h + 1;
 
-    var pProfiles = [];
-    for (i = 0; i < pNames.length; i++) {
-        var jSearch = JSON.search(players, "//players[name='" + pNames[i] + "']");
-        pProfiles.push(jSearch[0]);
-    }
+    var searchStr =
+        "//*[villages/village_x >=" +
+        String(x) +
+        " and not(villages/village_x > " +
+        String(boundX) +
+        ") and villages/village_y >= " +
+        String(y) +
+        " and not(villages/village_y > " +
+        String(boundY) +
+        ")]";
 
-    ui_clearTribeInfo();
-    ui_displayPlayersInfo(pProfiles);
+    // this step might be necessary to remove duplicates for players entries
+    //var p = JSON.search(players, searchStr);
+    //var pIds = [];
+    //for(var i = 0; i < p.length; i++) {
+    //    pIds.push(p[i].id);
+    //}
+    //pIds = pIds.unique();
+    //
+    //var pProfiles = [];
+    //for (i = 0; i < pIds.length; i++) {
+    //    var jSearch = JSON.search(players, "//players[id='" + pIds[i] + "']");
+    //    pProfiles.push(jSearch[0]);
+    //}
 
-    return pProfiles;
+    return JSON.search(players, searchStr);;
 }

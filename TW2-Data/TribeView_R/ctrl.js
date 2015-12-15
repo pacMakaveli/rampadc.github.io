@@ -37,7 +37,18 @@ function ctrl_handleSearchBox(s) {
     } else if(s == "province") {
         ui_clearTribeInfo();
         players = getPlayersFromProvince(searchTerm);
-    } else {
+    } else if(s == "area") {
+        ui_clearTribeInfo();
+        var searchParamsRegex = /([0-9]{1,3})\|([0-9]{1,3})\s*,\s*([0-9]+)/;
+        var searchParams = searchParamsRegex.exec(searchTerm);
+
+        var center = {x: parseInt(searchParams[1]), y: parseInt(searchParams[2])};
+        var radius = parseInt(searchParams[3]);
+
+        var topLeftCorner = {x: center.x - radius, y: center.y - radius};
+        var side = radius * 2;
+        players = getPlayersByArea(topLeftCorner.x, topLeftCorner.y, side, side);
+        console.log(players);
     }
 
     for(var i = 0; i < players.length; i++) {
