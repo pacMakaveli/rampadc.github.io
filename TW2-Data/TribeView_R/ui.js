@@ -56,9 +56,10 @@ function startGUI(lists, t10, uT) {
                 options: [
                     {id: 1, value: "Tribe"},
                     {id: 2, value: "Player"},
-                    {id: 3, value: "Province"}
+                    {id: 3, value: "Province"},
+                    {id: 4, value: "Area"}
                 ],
-                width: 265
+                width: 350
             },
             {
                 view: "search",
@@ -234,13 +235,20 @@ function onJZFeatureChanged() {
 function onSearchOptionChanged(val) {
     if(val == 1) {
         searchBy = "tribe";
+        $$('searchBox').define('placeholder', "Enter a name");
         $$('searchBox').define("suggest", searchSuggestionsLists.tribesList);
     } else if(val == 2) {
         searchBy = "player";
+        $$('searchBox').define('placeholder', "Enter a name");
         $$('searchBox').define("suggest", searchSuggestionsLists.playersList);
     } else if(val == 3) {
         searchBy = "province";
+        $$('searchBox').define('placeholder', "Enter a name");
         $$('searchBox').define("suggest", searchSuggestionsLists.provincesList);
+    } else if(val == 4) {
+        searchBy = "area";
+        $$('searchBox').define('placeholder', "xxx|yyy, radius");
+        $$('searchBox').define("suggest", []);
     }
     $$('searchBox').refresh();
 }
@@ -316,6 +324,9 @@ function exportVillages(results) {
     download(results.name + "_villages.txt", str);
 }
 
+function ui_removeTribeTagColumn() {
+
+}
 // HELPER FUNCTION
 function download(filename, text) {
     var pom = document.createElement('a');
