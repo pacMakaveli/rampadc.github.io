@@ -8,11 +8,10 @@ const TOP_DOWN_TO_SLANT_RATIO = 0.6240477174329043;
 //const HORZ_MODIFIER = 0.0264; // larger = more to the right
 //const VERT_MODIFIER = 1.774; // bigger = further
 
-const HORZ_MODIFIER = 0; // larger = more to the right
-const VERT_MODIFIER = 1; // bigger = further
-
 var mapTileHeight   = null;
 var mapTileWidth    = null;
+
+var mapSideLength = 256;
 
 function startCompilation() {
     console.log("Starting compilation, even-r, pointy-top");
@@ -41,31 +40,34 @@ function map_calcCenterCoor(tw2Col, tw2Row) {
     var tw2_displ = tw2_calcDisp(tw2Col, tw2Row, 0, 0);
     var tw2_dxRatio = (tw2_displ.x / 1000);
     var tw2_dyRatio = tw2_displ.y / 1000; // top down
-    tw2_dyRatio *= TOP_DOWN_TO_SLANT_RATIO * VERT_MODIFIER; // slant,  away
+    //tw2_dyRatio *= TOP_DOWN_TO_SLANT_RATIO * VERT_MODIFIER; // slant,  away
+    //tw2_dyRatio *= TOP_DOWN_TO_SLANT_RATIO; // slant,  away
 
     //translate to geo map's displacement
     return {
         x: tw2_dxRatio * 360 - 180,
-        y: tw2_dyRatio * (-180) + 90
+        y: (tw2_dyRatio * (-180) + 90)*2*TOP_DOWN_TO_SLANT_RATIO
     }
 }
 
 function map_calcVertices(center) {
     var vertices = [];
-    var mapTileRadius1 = (mapTileWidth-HORZ_MODIFIER)/Math.sqrt(3);
+    //var mapTileRadius1 = (mapTileWidth-HORZ_MODIFIER)/Math.sqrt(3);
+    var mapTileRadius1 = (mapTileWidth)/Math.sqrt(3);
     var mapTileRadius2 = mapTileHeight/2 - 2/100; //
 
-    var angles_deg = [20.92, 90, 159.08, 20.92+180, 270, 159.08+180]; // measured from Autodesk Inventor
+    //var angles_deg = [20.92, 90, 159.08, 20.92+180, 270, 159.08+180]; // measured from Autodesk Inventor
+    var angles_deg = [30, 90, 150, 210, 270, 330];
     for(var i = 0; i < angles_deg.length; i++) {
         var angle_rad = Math.PI / 180 * angles_deg[i];
 
         var vertexX = center.x + mapTileRadius1 * Math.cos(angle_rad);
         var vertexY = null;
-        if((i == 1) || (i == 4)) {
-            vertexY = center.y + mapTileRadius2 * Math.sin(angle_rad);
-        } else {
+        //if((i == 1) || (i == 4)) {
+        //    vertexY = center.y + mapTileRadius2 * Math.sin(angle_rad);
+        //} else {
             vertexY = center.y + mapTileRadius1 * Math.sin(angle_rad);
-        }
+        //}
 
         //console.log(i, vertexX.toFixed(3), vertexY.toFixed(3));
         vertexX = Number(vertexX.toFixed(10));
@@ -76,9 +78,19 @@ function map_calcVertices(center) {
     return vertices;
 }
 
+function squishHex(hex, center) {
+    // last vertex was by pass reference
+    for(var i = 0; i < hex.length-1; i++) {
+        hex[i][1] = (hex[i][1] - center.y)*TOP_DOWN_TO_SLANT_RATIO + center.y;
+    }
+    return hex;
+}
+
 function createHex(col, row) {
     var center = map_calcCenterCoor(col, row);
-    return map_calcVertices(center);
+    var hexPolygon = map_calcVertices(center);
+    //return hexPolygon;
+    return squishHex(hexPolygon, center);
 }
 
 function createGeoFeatureWithoutProperties(col, row) {
