@@ -81,7 +81,7 @@
 			import spark.events.IndexChangeEvent;
 			import spark.events.TextOperationEvent;
 			
-			private var villageRegex:RegExp = new RegExp(/\((.+)\)\[([0-9]+)\|([0-9]+)\]\{(.+)\}/gm);
+			private var villageRegex:RegExp = new RegExp(/\((.+)\)\[([0-9]+)\|([0-9]+)\]/gm);
 			
 			private var attV_name:Vector.<String>;
 			private var attV_coor:Vector.<Point>;
@@ -140,18 +140,17 @@
 					if(!attPointExisted(Number(attR[2]), Number(attR[3]))) {
 						attV_name.push(new String(attR[1]));
 						attV_coor.push(new Point(Number(attR[2]), Number(attR[3])));
-						attV_id.push(Number(attR[4]));
+						if(attR.length == 5) attV_id.push(Number(attR[4]));
 						attR = villageRegex.exec(attVilsTxt.text);
 					}
 				}
-				
 				statusTxt.text = "Parsing target villages... ";
 				var tarR:Object = villageRegex.exec(targetsTxt.text);
 				while(tarR != null) {
 					if(!tarPointExisted(Number(tarR[2]), Number(tarR[3]))) {
 						tarV_coor.push(new Point(Number(tarR[2]), Number(tarR[3])));
 						tarV_name.push(new String(tarR[1]));
-						tarV_id.push(Number(tarR[4]));
+						if(tarR.length == 5) tarV_id.push(Number(tarR[4]));
 						tarR = villageRegex.exec(targetsTxt.text);
 					}
 				}
@@ -168,8 +167,6 @@
 						var ac:AttComponent = new AttComponent();
 						ac.villageCoor = attV_coor[i];
 						ac.villageName = attV_name[i];
-						ac.villageId = attV_id[i];
-						ac.targetId = tarV_id[i];
 						ac.targetsList = targetsStr;
 						ac.worldSpeed = 1;
 						attComponents.push(ac);
