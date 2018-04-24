@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="tw2-sim.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="Simulator.js"></script>
+    <script src="tw2-sim.js"></script>
+    <title>TW2-Sim</title>
+</head>
+<body>
+<div id="container">
+    <div id="attackerDiv">
+        <table>
+            <tr>
+                <td class="push-text-left">Attacker</td>
+                <td class="push-cell-right">
+                    <img src="simUI/faith.jpg" alt="Faith" title="Church"/>
+                    <input id="attackerFaithCB" type="checkbox"/>
+                </td>
+                <td class="push-cell-right">
+                    <img src="simUI/morale.jpg" alt="Morale" title="Morale"/>
+                    <input id="morale" type="text" maxlength="3" style="width:2em;" value="100"/> %
+                </td>
+                <td class="push-cell-right">
+                    <img src="simUI/luck.jpg" alt="Luck" title="Luck"/>
+                    <input id="luck" type="text" maxlength="3" style="width:2em;" value="0"/> %
+                </td>
+                <td class="push-cell-right">
+                    <img src="simUI/officer.jpg" alt="Officer" title="Grandmaster"/>
+                    <input id="officerCB" type="checkbox"/>
+                </td>
+            </tr>
+        </table>
+        <table id="attackerTbl">
+            <thead>
+            <tr>
+                <td></td>
+                <td><img src="simUI/units_0.jpg" alt="Spear" title="Spear"/></td>
+                <td><img src="simUI/units_1.jpg" alt="Sword" title="Sword"/></td>
+                <td><img src="simUI/units_2.jpg" alt="Axe" title="Axe"/></td>
+                <td><img src="simUI/units_3.jpg" alt="Archer" title="Archer"/></td>
+                <td><img src="simUI/units_4.jpg" alt="LC" title="Light cavalry"/></td>
+                <td><img src="simUI/units_5.jpg" alt="MA" title="Mounted archer"/></td>
+                <td><img src="simUI/units_6.jpg" alt="HC" title="Heavy cavalry"/></td>
+                <td><img src="simUI/units_7.jpg" alt="Ram" title="Ram"/></td>
+                <td><img src="simUI/units_8.jpg" alt="Cat" title="Catapult"/></td>
+                <td><img src="simUI/units_9.jpg" alt="Serk" title="Berserker"/></td>
+                <td><img src="simUI/units_10.jpg" alt="Treb" title="Trebutchet"/></td>
+                <td><img src="simUI/units_11.jpg" alt="Snob" title="Nobleman"/></td>
+                <td><img src="simUI/units_12.jpg" alt="Pal" title="Paladin"/></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr id="attackerQuantity">
+                <td class="push-text-left">Amount</td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+            </tr>
+            <tr id="attackerLosses">
+                <td class="push-text-left">Losses</td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="defenderDiv">
+        <table>
+            <tr>
+                <td class="push-text-left">Defender</td>
+                <td class="push-cell-right">
+                    <img src="simUI/faith.jpg" alt="Faith" title="Church"/>
+                    <input id="defenderFaithCB" type="checkbox"/>
+                </td>
+                <td class="push-cell-right">
+                    <img src="simUI/wall.jpg" alt="Wall" title="Wall"/>
+                    <input id="wallLvl" type="text" maxlength="2" style="width: 2em;"/>
+                </td>
+            </tr>
+        </table>
+        <table id="defenderTbl">
+            <thead>
+            <tr>
+                <td></td>
+                <td><img src="simUI/units_0.jpg" alt="Spear" title="Spear"/></td>
+                <td><img src="simUI/units_1.jpg" alt="Sword" title="Sword"/></td>
+                <td><img src="simUI/units_2.jpg" alt="Axe" title="Axe"/></td>
+                <td><img src="simUI/units_3.jpg" alt="Archer" title="Archer"/></td>
+                <td><img src="simUI/units_4.jpg" alt="LC" title="Light cavalry"/></td>
+                <td><img src="simUI/units_5.jpg" alt="MA" title="Mounted archer"/></td>
+                <td><img src="simUI/units_6.jpg" alt="HC" title="Heavy cavalry"/></td>
+                <td><img src="simUI/units_7.jpg" alt="Ram" title="Ram"/></td>
+                <td><img src="simUI/units_8.jpg" alt="Cat" title="Catapult"/></td>
+                <td><img src="simUI/units_9.jpg" alt="Serk" title="Berserker"/></td>
+                <td><img src="simUI/units_10.jpg" alt="Treb" title="Trebutchet"/></td>
+                <td><img src="simUI/units_11.jpg" alt="Snob" title="Nobleman"/></td>
+                <td><img src="simUI/units_12.jpg" alt="Pal" title="Paladin"/></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr id="defenderQuantity">
+                <td class="push-text-left">Amount</td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+                <td><input type="text" maxlength="5" class="unit-input"/></td>
+            </tr>
+            <tr id="defenderLosses">
+                <td class="push-text-left">Losses</td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+                <td class="units-loss"></td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <tr><td class="push-text-left"><div id="wallLeftDiv"></div></td></tr>
+        </table>
+    </div>
+
+    <p>
+        <button id="resetBtn" type="button">Reset</button>
+        <button id="useDefSurvivedBtn" type="button">Use survived defenders as defending input</button>
+    </p>
+</div>
+
+</body>
+</html>

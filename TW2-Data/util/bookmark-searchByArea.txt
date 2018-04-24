@@ -1,0 +1,37 @@
+function bm_searchPlayersByArea() {
+Array.prototype.unique = function() {
+    for (var e = [], o = 0; o < this.length; o++)
+        -1 == e.indexOf(this[o]) && e.push(this[o]);
+    return e
+}
+;
+
+    var searchTerm = window.prompt("top-left X, top-left Y, searchWidth, searchHeight", "500, 500, 10, 10");
+    
+    var searchPattern = /([0-9]{3}),\s*([0-9]{3}),\s*([0-9]+),\s*([0-9]+)\s*/;
+    var result = searchPattern.exec(searchTerm);
+    
+    var x = parseInt(result[1]);
+    var y = parseInt(result[2]);
+    var w = parseInt(result[3]);
+    var h = parseInt(result[4]);
+    
+    var v = getVillages(x, y, w, h);
+    var pNames = [];
+    for(var i = 0; i < v.length; i++) {
+        pNames.push(v[i].charName);
+    }
+    pNames = pNames.unique();
+    
+    var pProfiles = [];
+    for (i = 0; i < pNames.length; i++) {
+        var jSearch = JSON.search(players, "//players[name='" + pNames[i] + "']");
+        pProfiles.push(jSearch[0]);
+    }
+    
+    ui_clearTribeInfo();
+    ui_displayPlayersInfo(pProfiles)
+}
+
+bm_searchPlayersByArea();
+

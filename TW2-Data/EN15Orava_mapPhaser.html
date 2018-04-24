@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EN15 Map Preview</title>
+    <link rel="stylesheet" href="MapView_R/Phaser/ui.css">
+
+    <script src="MapView_R/lib/jquery-2.1.4.min.js"></script>
+    <script src="MapView_R/lib/defiant-latest.min.js"></script>
+
+    <script src="MapView_R/lib/phaser/phaser.js"></script>
+</head>
+<body>
+<div id="mapContainer"></div>
+<script src="MapView_R/Phaser/R.js"></script>
+<script src="MapView_R/Phaser/Map.js"></script>
+
+<script>
+    var v, vss; // villages and villages Snapshot
+//    $.getJSON("./en15db/db/Villages.json", function(json) {
+//        v = json.villages;
+//        vss = Defiant.getSnapshot(json);
+//        console.log("Done");
+        if(map) {
+            map.state.add("Map", Map, true);
+        }
+//    });
+</script>
+</body>
+</html>
